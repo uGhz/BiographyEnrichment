@@ -71,7 +71,7 @@
     <form id="viafSearchForm" class="ui form">
 	  <div class="field">
 	    <label>Saisissez un identifiant VIAF&nbsp;:</label>
-	    <input type="viaf-id" placeholder="96994048">
+	    <input id="viaf-id" type="text" placeholder="96994048">
 	  </div>
 	  <div class="ui submit button">Chercher</div>
 	</form>
@@ -149,7 +149,7 @@
   </div>
   
      <script id="empty-results-area-template" type="mustache/x-tmpl-mustache">
-        <div class="ui column dimmable">
+        <div class="ui four columns dimmable">
             <div class="ui grid">
                 <div class="thirteen wide column">
                     <h2 class="ui header"><i class="{{iconName}} icon"></i>
@@ -161,12 +161,7 @@
                         </div>
                     </h2>
                 </div>
-                <div class="three wide column">
-                    <div class="ui mini right floated statistic">
-                        <div class="value">0</div>
-                        <div class="label">Résultats</div>
-                    </div>
-                </div>
+
             </div>
             <div class="ui inverted dimmer">
                 <div class="ui text loader">Interrogation du catalogue...</div>

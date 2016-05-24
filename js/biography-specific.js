@@ -21,7 +21,7 @@ $(document).ready(function () {
                     parametersMap = {
                         implementation:     new ViafDataAnalyzer(),
                         maxResultsPerPage:  20,
-                        dataType:           "xml"
+                        dataType:           "json"
                     };
                     break;
             }
@@ -34,7 +34,139 @@ $(document).ready(function () {
         
     };
     
-    
+    /*********************************
+     *   CLASS FacadeDataProvider
+     *
+     
+     - Possède une URL d'accès
+     
+     - Méthodes :
+         - Publiques :
+         --- getDetailedItem
+             @param  url           // Pointant sur une représentation distante et détaillée de la ressource
+             @return copies        // Un tableau d'informations sur des exemplaires de la ressources
+
+     */
+     function FacadeDataProvider( parametersMap ) {
+         // Propriétéliées au paramétrage du modèle
+         this._analyzer              = parametersMap.implementation;
+         this._MAX_RESULTS_PER_PAGE  = parametersMap.maxResultsPerPage;
+         this._DATA_TYPE             = parametersMap.dataType;
+         
+         // Propriétés gérant l'état du modèle
+         this._currentQueryString    = "";
+         this._currentPageNumber     = 0;
+         this._currentTotalOfResults = 0;
+         this._moreResultsAvailable  = false;
+
+     }
+
+     FacadeDataProvider.prototype = {
+         
+         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
+         moreResultsAvailable: function () {
+             var lastPageNumber = Math.ceil(this._currentTotalOfResults / this._MAX_RESULTS_PER_PAGE);
+             if (lastPageNumber > this._currentPageNumber) {
+                 return true;
+             }
+             
+             return false;
+         },
+         
+         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
+         getFreshSearchResults: function ( searchString ) {
+
+             this._currentQueryString = searchString;
+             var queryUrl = this._analyzer.buildRequestUrl(this._currentQueryString);
+             
+             return this._sendRequest(queryUrl);
+         },
+         
+         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
+         getNextSearchResults: function () {
+             
+             var queryUrl = this._analyzer.buildRequestUrl(
+                                 this._currentQueryString,
+                                 this._currentPageNumber + 1);
+             
+             return this._sendRequest( queryUrl );
+             
+         },
+         
+         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
+         getTotalOfResults: function () {
+           return this._currentTotalOfResults;  
+         },
+         
+         _sendRequest: function ( queryUrl ) {
+             
+             var _self = this;
+             
+             var promisedResults = $.Deferred();
+             
+             console.log("About to request : " + queryUrl);
+             var ajaxPromise = $.ajax({
+                 // The URL for the request
+                 
+                 url: queryUrl,
+                 dataType: this._DATA_TYPE,
+             });
+             
+             ajaxPromise.done(function (response) {
+                 
+                     _self._analyzer.analyze(response);
+                     _self._currentPageNumber        = _self._analyzer.getPageNumber();
+                     _self._currentTotalOfResults    = _self._analyzer.getTotalOfResults();
+                     var resultSet                   = _self._analyzer.getResultSet();
+                 
+                     console.log("_sendRequest. Data found !");
+                     console.log("_self._currentPageNumber : " + _self._currentPageNumber);
+                     console.log("_self._currentTotalOfResults : " + _self._currentTotalOfResults);
+                 
+                     _self._analyzer.unsetData();
+                     promisedResults.resolve(resultSet);
+                     // searchResultView._handleNewResultSet(resultSet);
+             });
+             
+             ajaxPromise.always(function () {
+                     // console.log("The request for _sendRequest is complete!");
+             });
+
+             return promisedResults;
+         },
+     
+         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
+         getDetailedItem: function ( url ) {
+             // @todo supprimer le calcul suivant
+             var itemIdentifier = url.slice(url.indexOf("?") + 1);
+             var _self = this;
+             var promisedResults = $.Deferred();
+             
+             
+             // console.log("Query String : " + queryString);
+             var queryUrl = _self._analyzer.buildItemUrl(itemIdentifier);
+             console.log("About to request : " + queryUrl);
+             
+             var ajaxPromise = $.ajax({
+                 url: queryUrl,
+                 dataType: _self._DATA_TYPE
+             });
+             
+             
+             ajaxPromise.done(function (response) {
+                     var detailedItem = _self._analyzer.getAsCatalogItem(response);
+                     // console.log("Copies found !");
+                     promisedResults.resolve(detailedItem);
+             });
+             
+             
+             ajaxPromise.always(function () {
+                 // console.log("Within callback of promise.");
+             });
+             
+             return promisedResults;
+         }
+     };
     
     function ViafDataAnalyzer() {
         this._data = null;
@@ -75,8 +207,9 @@ $(document).ready(function () {
         buildRequestUrl: function (searchString, pageNumber) {
             
             // http://www2.biusante.parisdescartes.fr/perio/index.las?do=rec&let=0&rch=human+genetics
-            var urlArray = [
-                "proxy-perio.php?do=rec&let=0&rch=",
+            /*
+        	var urlArray = [
+                "proxy-viaf.php",
                 encodeURIComponent(searchString)
             ];
             
@@ -88,7 +221,8 @@ $(document).ready(function () {
             }
             
             var url = urlArray.join("");
-            
+            */
+        	var url = "proxy-viaf.php?viaf-id=" + searchString;
             return url;
         },
         
@@ -126,7 +260,7 @@ $(document).ready(function () {
         // Implémentation OK
         _buildResultSet: function () {
         	
-        	console.log("EPeriodical. Construction des résultats Pério. électr...");
+        	console.log("ViafDataAnalyzer. Construction des résultats...");
         	
             var $rawData = $("<html></html>").append($("<body></body>")).append(this._data);
             // console.log("EPeriodical. $rawData : " + $rawData);
@@ -251,6 +385,10 @@ $(document).ready(function () {
         // Créer et attacher les ResultAreas
         var dpf = new DataProviderFactory();
         
+        this._activeResultAreasSet.push(
+                new ResultsArea("VIAF", "Autorités en tous genres", "student", this, dpf.getInstance("ViafData"))
+        );
+        
         // Attacher les gestionnaires d'évènements
         this._form.submit($.proxy(this._updateCurrentRequest, this));
         
@@ -292,7 +430,7 @@ $(document).ready(function () {
                     tempResultArea = this._activeResultAreasSet[i];
                     if (tempResultArea) {
                         tempPromise = tempResultArea.handleQueryUpdate();
-                        tempPromise.done(updateStatsFunction);
+                        // tempPromise.done(updateStatsFunction);
                         promises.push(tempPromise);   
                     }
                 }
@@ -308,11 +446,11 @@ $(document).ready(function () {
             },
             
             _setLoadingStateOn: function () {
-                this._form.children(".ui.search").addClass("loading");
+                this._form.addClass("loading");
             },
             
             _setLoadingStateOff: function() {
-                this._form.children(".ui.search").removeClass("loading");
+                this._form.removeClass("loading");
             }
         };
     
@@ -437,39 +575,6 @@ $(document).ready(function () {
              return resultsHandled;
          },
          
-         /*
-         _handleMoreResultsAction: function (event) {
-             event.preventDefault();
-             return this._askForResults();
-         },
-         */
-         
-         /*
-         _askForItemDetails: function ( event ) {
-
-             event.preventDefault();
-
-             var domItem = $(event.currentTarget).closest(".item");
-
-             this._setItemLoadingStateOn(domItem);
-
-             var promisedResults = this._dataProvider.getDetailedItem(domItem.data("catalog-url"));
-             
-             var _self = this;
-             promisedResults.done(function ( results ) {   
-                 _self._handleNewItemDetails(results, domItem);
-                 _self._setItemLoadingStateOff(domItem);
-             });
-         },
-         */
-         
-         /*
-         _redirectToCatalogDetailPage: function ( event ) {
-             var domItem = $(event.currentTarget).closest(".item");
-             window.location.href = domItem.data("catalog-url");
-         },
-         */
-         
          _setLoadingStateOn: function () {
              this._container.children(".dimmer").addClass("active");
          },
@@ -477,15 +582,6 @@ $(document).ready(function () {
          _setLoadingStateOff: function () {
              this._container.children(".dimmer").removeClass("active");
          },
-
-         /*
-         _setStats: function (nResults) {
-             // Créer au besoin les éléments nécessaires à l'affichage des stats
-             // Mettre à jour ces éléments
-           // console.log("_setStats called ! nResults : " + nResults);
-             this._statsContainer.children(".value").text(nResults);
-         },
-         */
          
          _buildResultItem: function (dataItem) {
              
@@ -505,18 +601,6 @@ $(document).ready(function () {
          _setItemLoadingStateOff: function (domItem) {
              domItem.find(".dimmer").removeClass("active");
          },
-         
-         /*
-         _handleNewItemDetails: function (detailedItem, domItem) {
-           // console.log("_handleNewItemDetails has been called !");
-             
-             var newItem = this._buildResultItem(detailedItem);
-             newItem.find("span.label.popup-conditions").popup();
-             domItem.replaceWith(newItem);
-             
-           // console.log("handleDetails is finished !");
-         },
-         */
          
          _handleNewResultSet: function (resultSet) {
            // console.log("_handleNewResultSet has been called !");
@@ -556,45 +640,6 @@ $(document).ready(function () {
              // Mettre à jour les statistiques de recherche
              this._setStats(this._currentTotalResults);
          },
-         
-         /*
-         _askForThumbnailUrl: function() {
-             var lastDomItems = this._container.children(".items").last().children(".item");
-             
-             var isbnArray = [];
-             
-             lastDomItems.each(
-                 function () {
-                     isbnArray.push($(this).data("isbn"));
-                 }
-             );
-             
-             var gbdp = new GoogleBooksDataProvider();
-             var promisedResults = gbdp.getThumbnailsUrl(isbnArray);
-             
-             promisedResults.done(function( results ) {
-               // console.log("_askForThumbnailUrl Results");
-               // console.log(results);
-                 
-                 var tempIsbn = "";
-                 var tempUrl = "";
-                 var currentItem = null;
-                 lastDomItems.each(
-                     function () {
-                         currentItem = $(this);
-                         tempIsbn = currentItem.data("isbn");
-                         if ( tempIsbn ) {
-                             tempUrl = results[tempIsbn];
-                             if ( tempUrl ) {
-                                 currentItem.children(".image").children("img").attr("src", tempUrl);
-                             }
-                         }
-                     }
-                 );
-
-             });
-         },
-         */
          
          _clear: function() {
              this._container.children(".items").empty();
