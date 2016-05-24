@@ -1,0 +1,13 @@
+### Metadonnées des éditeurs Microsoft.
+**/_vti_cnf/**
+**/_vti_pvt/**
+
+### Fichiers système Windows et IIS.
+**/Thumbs.db
+**/desktop.ini
+/web.config
+
+### Metadonnées de l'éditeur Eclipse.
+.buildpath
+.project
+.settings/**
