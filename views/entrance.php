@@ -9,20 +9,7 @@
   <!-- Site Properties -->
   <title>Biography Enrichment - BIU Santé</title>
 
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/reset.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/site.css">
-
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/container.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/grid.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/header.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/image.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/menu.css">
-
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/divider.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/list.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/segment.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/dropdown.css">
-  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/components/icon.css">
+  <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/dist/semantic.min.css">
 
   <style type="text/css">
   body {
@@ -43,6 +30,8 @@
   }
   </style>
 
+	<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="Semantic-UI-CSS-master/dist/semantic.min.js"></script>
 </head>
 <body>
 
@@ -78,6 +67,32 @@
     <h1 class="ui header">Semantic UI Fixed Template</h1>
     <p>This is a basic fixed menu template using fixed size containers.</p>
     <p>A text container is used for the main container, which is useful for single column layouts</p>
+    
+    <form id="viafSearchForm" class="ui form">
+	  <div class="field">
+	    <label>Saisissez un identifiant VIAF&nbsp;:</label>
+	    <input type="viaf-id" placeholder="96994048">
+	  </div>
+	  <div class="ui submit button">Chercher</div>
+	</form>
+        <div class="ui padded grid">
+        <div id="viafSearchResults" class="four column centered row">
+           <!--
+            <div class="column">
+                <h2 class="ui header">Heading</h2>
+                <p class="ui segment">Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+                <button class="ui tiny button m-top-10">View details &raquo;</button>
+            </div>
+            -->
+        </div>
+        <div class="row">
+            <div class="column">
+                <div class="ui divider"></div>
+                <span>&copy; Gupta 2015</span>
+            </div>
+        </div>
+    </div>
+    
     <img class="wireframe" src="images/wireframe/media-paragraph.png">
     <img class="wireframe" src="images/wireframe/paragraph.png">
     <img class="wireframe" src="images/wireframe/paragraph.png">
@@ -132,6 +147,37 @@
       </div>
     </div>
   </div>
+  
+     <script id="empty-results-area-template" type="mustache/x-tmpl-mustache">
+        <div class="ui column dimmable">
+            <div class="ui grid">
+                <div class="thirteen wide column">
+                    <h2 class="ui header"><i class="{{iconName}} icon"></i>
+                        <div class="content">
+                            {{title}}
+                            {{#subtitle}}
+                            <div class="sub header">{{&subtitle}}</div>
+                            {{/subtitle}}
+                        </div>
+                    </h2>
+                </div>
+                <div class="three wide column">
+                    <div class="ui mini right floated statistic">
+                        <div class="value">0</div>
+                        <div class="label">Résultats</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui inverted dimmer">
+                <div class="ui text loader">Interrogation du catalogue...</div>
+            </div>
+            <div class="ui relaxed divided items"></div>
+        </div>
+    </script>
+  
+  
+  <script src="mustache/mustache.min.js"></script>
+  <script src="js/biography-specific.js"></script>
 </body>
 
 </html>
