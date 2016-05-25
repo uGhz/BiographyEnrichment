@@ -1,7 +1,7 @@
 <?php 
 // Example : http://viaf.org/viaf/102333412/justlinks.json
 // $dataSourceBaseUrl = "http://www2.biusante.parisdescartes.fr/developpement/periodiques-electroniques/index.las";
-$dataSourceBaseUrl = "http://viaf.org/viaf/102333412/justlinks.json";
+$dataSourceBaseUrl = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/justlinks.json";
 
 
 $url = $dataSourceBaseUrl;// . '?' . $_SERVER['QUERY_STRING'];

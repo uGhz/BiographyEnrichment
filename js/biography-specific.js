@@ -5,6 +5,32 @@
 $(document).ready(function () {
     "use strict";
 
+    var ReferenceData = {
+    		"ViafAuthorities" : {
+	    		"ALL" : "All source data within VIAF",
+	    		"BAV" : "Biblioteca Apostolica Vaticana",
+	    		"BNE" : "Biblioteca Nacional de España",
+	    		"BNF" : "Bibliothèque Nationale de France",
+	    		"DNB" : "Deutsche Nationalbibliothek",
+	    		"EGAXA" : "Bibliotheca Alexandrina (Egypt)",
+	    		"ICCU" : "Istituto Centrale per il Catalogo Unico",
+	    		"JPG" : "Getty Research Institute",
+	    		"LC" : "Library of Congress/NACO",
+	    		"LAC" : "Library and Archives Canada",
+	    		"NKC" : "National Library of the Czech Republic",
+	    		"NLA" : "National Library of Australia",
+	    		"NLIara" : "National Library of Israel (Arabic)",
+	    		"NLIcyr" : "National Library of Israel (Cyrillic)",
+	    		"NLIheb" : "National Library of Israel (Hebrew)",
+	    		"NLIlat" : "National Library of Israel (Latin)",
+	    		"NUKAT" : "The National Union Catalog of Poland",
+	    		"PTBNP" : "Biblioteca Nacional de Portugal",
+	    		"SELIBR" : "National Library of Sweden",
+	    		"SWNL" : "Swiss National Library"
+    		}
+    };
+    
+    
     function DataResultSet() {
         // this.numberOfResults    = null;
         this.results            = [];
@@ -136,9 +162,11 @@ $(document).ready(function () {
          */
          
          // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
+         /*
          getTotalOfResults: function () {
            return this._currentTotalOfResults;  
          },
+         */
          
          _sendRequest: function ( queryUrl ) {
              
@@ -383,7 +411,13 @@ $(document).ready(function () {
         	console.log("ViafDataAnalyzer. Analyse d'un data item...");
         	
             var item = new DataItem();
-            item.label = pieceOfData[0];
+            
+            if (ReferenceData.ViafAuthorities[pieceOfData[0]]) {
+            	item.label = ReferenceData.ViafAuthorities[pieceOfData[0]];
+            } else {
+                item.label = pieceOfData[0];
+            }
+
             item.value = pieceOfData[1];
             return item;
         },
@@ -453,7 +487,8 @@ $(document).ready(function () {
                 var promises = [];
                 var _self = this;
                 
-                this._currentRequest = this._form.find("input[type='text']").val();           
+                this._currentRequest = this._form.find("input[type='text']").val();
+                // console.log("_currentRequest updated : " + this._currentRequest);
                 this._setLoadingStateOn();
                 
                 // var updateStatsFunction = function () {_self._updateStats();};
@@ -653,7 +688,7 @@ $(document).ready(function () {
                  tempDomItem.appendTo(listRoot);
              }
              
-             this._container.find(".ui.table").append(listRoot.children("tr"));
+             this._container.find(".ui.table").append($("<tbody></tbody>")).append(listRoot.children("tr"));
              
              // Supprimer le bouton "Plus de résultats".
              // this._container.find("button.more-results").remove();
@@ -663,25 +698,15 @@ $(document).ready(function () {
                  $("<div class='ui icon info message'><i class='warning icon'></i><div class='content'><div class='header'>Trop de réponses.</div><p>Merci d'affiner votre recherche.</p></div></div>")
                      .appendTo(this._container);
              } else {
-                 // S'il existe des résultats non encore affichés, insérer le bouton "Plus de résultats"
-                 
-            	 /*" +
-            	 "if (this._dataProvider.moreResultsAvailable()) {
-                    $("<button class='fluid ui button more-results'>Plus de résultats</button>").appendTo(this._container); 
-                 }
-                 */
+            	 // Rien ?
              }
-             
-             // Mettre à jour les statistiques de recherche
-             // this._setStats(this._currentTotalResults);
+
          },
          
          _clear: function() {
-             this._container.children(".items").empty();
-             // this._container.children("button.more-results").remove();
+             this._container.children(".ui.table tbody").empty();
              this._container.children(".message").remove();
-             //this._currentTotalResults = 0;
-             //this._setStats(0);
+
          }
      };
      
