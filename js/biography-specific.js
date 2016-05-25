@@ -5,7 +5,47 @@
 $(document).ready(function () {
     "use strict";
 
+    function DataResultSet() {
+        // this.numberOfResults    = null;
+        this.results            = [];
+        this.warningMessage     = "";
+    }
     
+    DataResultSet.prototype = {
+        WARNING_MESSAGE: {
+            TOO_MUCH_RESULTS: "Votre recherche renvoie de trop nombreux résultats. Merci de l'affiner."
+        }    
+    };
+    
+    /**
+     * Value Object représentant un résultat, une référence bibliographique.
+     * 
+     * @todo Ajouter un tableau de "tags". 
+     * @todo Ajouter un tableau d'exemplaires.
+     * @todo Ajouter une information "Accès libre" (vs. accès sur identification).
+     * @todo Ajouter, éventuellement, une information "langue". // Pas prioritaire.
+     * @todo Ajouter, éventuellement, une information "Pays". // Pas prioritaire.
+     * @todo Ajouter, éventuellement, une information "description".
+     */
+    function DataItem() {
+        this.label             = null;
+        this.value             = null;
+    }
+    
+    /**
+     * Value Object représentant une page de résultats bibliographiques.
+     * 
+     * @property {Number}   numberOfResults   Il s'agit du nombre total de résultats correspondant à la requête sur la source de données.
+     * @property {Array}    results           Tableau de DataItem.
+     * @property {Number}   currentPage       Index de la page courante (base 1).  
+     */
+    DataItem.prototype = {
+        mustacheTemplate: function () {
+            var template = $('#data-item-template').html();
+            Mustache.parse(template);
+            return template;
+        }()
+    };
     
     function DataProviderFactory() {}
     
@@ -64,6 +104,7 @@ $(document).ready(function () {
      FacadeDataProvider.prototype = {
          
          // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
+    		 /*
          moreResultsAvailable: function () {
              var lastPageNumber = Math.ceil(this._currentTotalOfResults / this._MAX_RESULTS_PER_PAGE);
              if (lastPageNumber > this._currentPageNumber) {
@@ -72,6 +113,7 @@ $(document).ready(function () {
              
              return false;
          },
+         */
          
          // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
          getFreshSearchResults: function ( searchString ) {
@@ -83,15 +125,15 @@ $(document).ready(function () {
          },
          
          // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
+         /*
          getNextSearchResults: function () {
              
-             var queryUrl = this._analyzer.buildRequestUrl(
-                                 this._currentQueryString,
-                                 this._currentPageNumber + 1);
+             var queryUrl = this._analyzer.buildRequestUrl(this._currentQueryString);
              
              return this._sendRequest( queryUrl );
              
          },
+         */
          
          // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
          getTotalOfResults: function () {
@@ -115,13 +157,17 @@ $(document).ready(function () {
              ajaxPromise.done(function (response) {
                  
                      _self._analyzer.analyze(response);
+                     /*
                      _self._currentPageNumber        = _self._analyzer.getPageNumber();
                      _self._currentTotalOfResults    = _self._analyzer.getTotalOfResults();
+                     */
                      var resultSet                   = _self._analyzer.getResultSet();
                  
                      console.log("_sendRequest. Data found !");
+                     /*
                      console.log("_self._currentPageNumber : " + _self._currentPageNumber);
                      console.log("_self._currentTotalOfResults : " + _self._currentTotalOfResults);
+                     */
                  
                      _self._analyzer.unsetData();
                      promisedResults.resolve(resultSet);
@@ -154,7 +200,7 @@ $(document).ready(function () {
              
              
              ajaxPromise.done(function (response) {
-                     var detailedItem = _self._analyzer.getAsCatalogItem(response);
+                     var detailedItem = _self._analyzer.getAsDataItem(response);
                      // console.log("Copies found !");
                      promisedResults.resolve(detailedItem);
              });
@@ -204,7 +250,7 @@ $(document).ready(function () {
         },
         
         // Implémentation OK
-        buildRequestUrl: function (searchString, pageNumber) {
+        buildRequestUrl: function (searchString) {
             
             // http://www2.biusante.parisdescartes.fr/perio/index.las?do=rec&let=0&rch=human+genetics
             /*
@@ -261,12 +307,12 @@ $(document).ready(function () {
         _buildResultSet: function () {
         	
         	console.log("ViafDataAnalyzer. Construction des résultats...");
-        	
+        	/*
             var $rawData = $("<html></html>").append($("<body></body>")).append(this._data);
             // console.log("EPeriodical. $rawData : " + $rawData);
             // console.log("EPeriodical. $rawData HTML : " + $rawData.html());
             
-            var resultSet = new CatalogResultSet();
+            var resultSet = new DataResultSet();
             
             var wrappingTable = $rawData.find('#table242').first();
             // console.log("Tables in $rawData : " + $rawData.find('table').length);
@@ -296,6 +342,25 @@ $(document).ready(function () {
             resultSet.results = tempItems;
 
             this._resultingResultSet = resultSet;
+            */
+        	console.log("ViafDataAnalyzer. Data : " + this._data);
+        	var _self = this;
+        	var resultSet = new DataResultSet();
+        	var tempItems = [];
+        	var tempDataItem = null;
+
+        	var rawData = this._data[0];
+        	for (var key in rawData) {
+        		  if (rawData.hasOwnProperty(key)) {
+        		    console.log(key + " -> " + rawData[key]);
+                    tempDataItem = _self._buildDataItem([key, rawData[key]]);
+                    tempItems.push(tempDataItem);
+        		  }
+        	}
+        	resultSet.results = tempItems;
+        	
+            // this._resultingResultSet = this._data;
+            this._resultingResultSet = resultSet;
         },
 
         
@@ -314,49 +379,16 @@ $(document).ready(function () {
              *      - div > font.text -> Tag (plusieurs occurrences)
              *
             */
-        _buildDataItem: function ($htmlData) {
-        	console.log("EPeriodical. Analyse d'un périodique électronique...");
+        _buildDataItem: function (pieceOfData) {
+        	console.log("ViafDataAnalyzer. Analyse d'un data item...");
         	
-            var item = new CatalogItem();
-            var directAccesses = [];
-            //var cell2 = rawXmlData.find('td > b > span');
-            // 
-            item.title          = $htmlData.find('.titre').text();
-            item.publisher      = $htmlData.find('.editeur').text();
-            
-            var siblings = $htmlData.nextUntil('tr.ligne-titre');
-            console.log("Current title : " + item.title);
-            console.log("siblings : " + siblings.length);
-            
-            /* WORK IN PROGRESS */
-            var da = null;
-            var tempNode = null;
-            var tempString = "";
-            var regexResult = null;
-            
-            siblings.each(function () {
-            	
-                tempNode = $(this);
-                da = new DirectAccess();
-                
-                da.url = "http://www.biusante.parisdescartes.fr/chercher/revues.php" + tempNode.find('.lien-acces-direct').attr('href');
-                console.log("da.url : " + da.url);
-
-                da.provider = tempNode.find('.fournisseur-acces').text();
-                console.log("da.provider : " + da.provider);
-                
-                da.holdings = tempNode.find('.etat-collection').text();
-                console.log("da.holdings : " + da.holdings);
-                
-                directAccesses.push(da);
-            });
-            
-            item.directAccesses = directAccesses;
-           
+            var item = new DataItem();
+            item.label = pieceOfData[0];
+            item.value = pieceOfData[1];
             return item;
         },
 
-        getAsCatalogItem: function () {
+        getAsDataItem: function () {
             throw "Exception : UnsupportedOperationException";
         }
 
@@ -563,7 +595,7 @@ $(document).ready(function () {
                  .done(
                      function( results ) {
                          _self._handleNewResultSet( results );
-                         _self._askForThumbnailUrl();
+                        //  _self._askForThumbnailUrl();
                      }
                  ).always(
                      function () {
@@ -588,8 +620,8 @@ $(document).ready(function () {
              var newDomItem = $(Mustache.render(dataItem.mustacheTemplate, dataItem));
              
              // Stockage de données spécifiques à l'item
-             newDomItem.data("catalog-url", dataItem.catalogUrl);
-             newDomItem.data("isbn", dataItem.isbn);
+             // newDomItem.data("catalog-url", dataItem.catalogUrl);
+             // newDomItem.data("isbn", dataItem.isbn);
 
              return $(newDomItem);
          },
@@ -603,28 +635,28 @@ $(document).ready(function () {
          },
          
          _handleNewResultSet: function (resultSet) {
-           // console.log("_handleNewResultSet has been called !");
+           console.log("_handleNewResultSet has been called !");
 
            // console.log("Results handled !");
 
              // this._currentTotalResults  = parseInt(resultSet.numberOfResults, 10);
-             this._currentTotalResults  = this._dataProvider.getTotalOfResults();
+             // this._currentTotalResults  = this._dataProvider.getTotalOfResults();
 
              // Récupérer, ligne à ligne, les données,
              // les mettre en forme et les attacher au conteneur d'items
              var tempDomItem = null;
              
-             var listRoot = $("<div class='ui relaxed divided items'></div>");
+             var listRoot = $("<table></table>");
              var resultsArray = resultSet.results;
              for (var i = 0, len = resultsArray.length; i < len; i++) {
                  tempDomItem = this._buildResultItem(resultsArray[i]);
                  tempDomItem.appendTo(listRoot);
              }
              
-             this._container.find(".items").append(listRoot.children(".item"));
+             this._container.find(".ui.table").append(listRoot.children("tr"));
              
              // Supprimer le bouton "Plus de résultats".
-             this._container.find("button.more-results").remove();
+             // this._container.find("button.more-results").remove();
              this._container.find("div.message").remove();
              
              if (resultSet.warningMessage === resultSet.WARNING_MESSAGE.TOO_MUCH_RESULTS) {
@@ -632,13 +664,16 @@ $(document).ready(function () {
                      .appendTo(this._container);
              } else {
                  // S'il existe des résultats non encore affichés, insérer le bouton "Plus de résultats"
-                 if (this._dataProvider.moreResultsAvailable()) {
+                 
+            	 /*" +
+            	 "if (this._dataProvider.moreResultsAvailable()) {
                     $("<button class='fluid ui button more-results'>Plus de résultats</button>").appendTo(this._container); 
                  }
+                 */
              }
              
              // Mettre à jour les statistiques de recherche
-             this._setStats(this._currentTotalResults);
+             // this._setStats(this._currentTotalResults);
          },
          
          _clear: function() {

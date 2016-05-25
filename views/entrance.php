@@ -63,35 +63,28 @@
     </div>
   </div>
 
-  <div class="ui main text container">
+<div class="ui main container">
     <h1 class="ui header">Semantic UI Fixed Template</h1>
     <p>This is a basic fixed menu template using fixed size containers.</p>
     <p>A text container is used for the main container, which is useful for single column layouts</p>
     
-    <form id="viafSearchForm" class="ui form">
+    <form id="viafSearchForm" class="ui form segment">
 	  <div class="field">
 	    <label>Saisissez un identifiant VIAF&nbsp;:</label>
 	    <input id="viaf-id" type="text" placeholder="96994048">
 	  </div>
 	  <div class="ui submit button">Chercher</div>
 	</form>
-        <div class="ui padded grid">
-        <div id="viafSearchResults" class="four column centered row">
-           <!--
-            <div class="column">
-                <h2 class="ui header">Heading</h2>
-                <p class="ui segment">Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-                <button class="ui tiny button m-top-10">View details &raquo;</button>
-            </div>
-            -->
-        </div>
-        <div class="row">
-            <div class="column">
-                <div class="ui divider"></div>
-                <span>&copy; Gupta 2015</span>
-            </div>
-        </div>
-    </div>
+	
+	<div id="viafSearchResults" class="ui segment"></div>
+	    
+	<div class="row">
+		<div class="column">
+		<div class="ui divider"></div>
+		<span>&copy; Gupta 2015</span>
+	</div>
+</div>
+
     
     <img class="wireframe" src="images/wireframe/media-paragraph.png">
     <img class="wireframe" src="images/wireframe/paragraph.png">
@@ -149,9 +142,7 @@
   </div>
   
      <script id="empty-results-area-template" type="mustache/x-tmpl-mustache">
-        <div class="ui four columns dimmable">
-            <div class="ui grid">
-                <div class="thirteen wide column">
+        <div class="ui dimmable">
                     <h2 class="ui header"><i class="{{iconName}} icon"></i>
                         <div class="content">
                             {{title}}
@@ -160,17 +151,35 @@
                             {{/subtitle}}
                         </div>
                     </h2>
-                </div>
 
-            </div>
             <div class="ui inverted dimmer">
-                <div class="ui text loader">Interrogation du catalogue...</div>
+                <div class="ui text loader">Interrogation de VIAF...</div>
             </div>
-            <div class="ui relaxed divided items"></div>
+            <table class="ui single line compact table"></table>
         </div>
     </script>
   
-  
+    <script id="data-item-template" type="mustache/x-tmpl-mustache">
+        <tr>
+			<td>{{ label }}</td>
+			<td>
+                    
+                    {{ #value.length }}
+                    <div class="ui list">
+                    {{ #value }}
+                        <div class="item">
+                            <div class="content">
+                               {{ . }}
+                            </div>
+                        </div>
+                    {{ /value }}
+                    </div>
+                    {{ /value.length }}
+                    
+			</td>
+        </tr>
+    </script>
+      
   <script src="mustache/mustache.min.js"></script>
   <script src="js/biography-specific.js"></script>
 </body>
