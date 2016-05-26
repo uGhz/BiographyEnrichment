@@ -71,23 +71,43 @@ body {
 		<p>This is a basic fixed menu template using fixed size containers.</p>
 		<p>A text container is used for the main container, which is useful
 			for single column layouts</p>
-
-		<form id="viafSearchForm" class="ui form segment">
-			<div class="field">
-				<label>Saisissez un identifiant VIAF&nbsp;:</label>
-				<input id="viaf-id" type="text" placeholder="96994048">
+		
+		<div class="ui grid">
+			
+			<div class="eight wide column">
+				<form id="viafSearchForm" class="ui form segment">
+					<div class="field">
+						<label>Saisissez un identifiant VIAF&nbsp;:</label>
+						<input id="viaf-id" type="text" placeholder="96994048">
+					</div>
+					<button type="submit" class="ui submit button">Chercher</button>
+				</form>
+		
+				<div id="viafSearchResults" class="ui segment"></div>
 			</div>
-			<button type="submit" class="ui submit button">Chercher</button>
-		</form>
-
-		<div id="viafSearchResults" class="ui segment"></div>
-
-		<div class="row">
-			<div class="column">
-				<div class="ui divider"></div>
-				<span>&copy; Gupta 2015</span>
+			
+			<div class="eight wide column">
+				<div class="ui segment">
+			        <h2 class="ui header"><i class="search icon"></i>
+                        <div class="content">
+                            VIAF Autosuggest
+                            <div class="sub header">Wise helper</div>
+                        </div>
+                    </h2>
+					<div class="ui fluid search">
+					  <div class="ui icon input">
+					    <input class="prompt" type="text" placeholder="Common passwords...">
+					    <i class="search icon"></i>
+					  </div>
+					  <div class="results"></div>
+					</div>
+				</div>
 			</div>
+			
 		</div>
+
+		<div class="ui divider"></div>
+		<span><i class="copyright icon"></i> Gupta 2015</span>
 	</div>
 
 	<div class="ui inverted vertical footer segment">
@@ -148,7 +168,7 @@ body {
             <div class="ui inverted dimmer">
                 <div class="ui text loader">Interrogation de VIAF...</div>
             </div>
-            <table class="ui single line compact table"></table>
+            <table class="ui fixed compact table"></table>
         </div>
     </script>
 
@@ -173,6 +193,68 @@ body {
 
 	<script src="mustache/mustache.min.js"></script>
 	<script src="js/biography-specific.js"></script>
+	<script>
+	
+	$('.ui.search')
+	  .search({
+	    apiSettings: {
+	      url: 'proxy-github.php?github-query={query}'
+	    },
+	    fields: {
+	      results : 'items',
+	      title   : 'name',
+	      url     : 'url'
+	    },
+	    minCharacters : 3,
+	    debug: true,
+	    verbose: true
+	  })
+	;
+	
+
+	/*
+	$('.ui.search')
+	  .search({
+	    type          : 'category',
+	    minCharacters : 3,
+	    apiSettings   : {
+	      onResponse: function(githubResponse) {
+	        var
+	          response = {
+	            results : {}
+	          }
+	        ;
+	        // translate GitHub API response to work with search
+	        $.each(githubResponse.items, function(index, item) {
+	          var
+	            language   = item.language || 'Unknown',
+	            maxResults = 8
+	          ;
+	          if(index >= maxResults) {
+	            return false;
+	          }
+	          // create new language category
+	          if(response.results[language] === undefined) {
+	            response.results[language] = {
+	              name    : language,
+	              results : []
+	            };
+	          }
+	          // add result to category
+	          response.results[language].results.push({
+	            title       : item.name,
+	            description : item.description,
+	            url         : item.html_url
+	          });
+	        });
+	        return response;
+	      },
+	      url: 'https://api.github.com/search/repositories?q={query}'
+	    }
+	  })
+	;
+	*/
+	</script>
 </body>
 
 </html>
