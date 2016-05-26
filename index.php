@@ -1,20 +1,21 @@
 <?php
+//echo realpath();
 ini_set('display_errors', FALSE);
 ini_set('max_execution_time', 120);
 ini_set('error_log', join(
 	DIRECTORY_SEPARATOR,
-	array(realpath(), 'logs', 'error.log')));
+	array(__DIR__, 'logs', 'error.log')
+	)
+);
 
-define('OFFLINE_SOURCE_DIRECTORY', join(
-	DIRECTORY_SEPARATOR,
-	array(realpath())));
+define('OFFLINE_SOURCE_DIRECTORY', __DIR__);
 
 set_include_path(
-get_include_path()
-. PATH_SEPARATOR
-. OFFLINE_SOURCE_DIRECTORY
-. PATH_SEPARATOR
-. join(DIRECTORY_SEPARATOR,	array(OFFLINE_SOURCE_DIRECTORY, 'libraries', 'FM_API_for_PHP_Standalone'))
+	get_include_path()
+	. PATH_SEPARATOR
+	. OFFLINE_SOURCE_DIRECTORY
+	. PATH_SEPARATOR
+	. join(DIRECTORY_SEPARATOR,	array(OFFLINE_SOURCE_DIRECTORY, 'libraries', 'FM_API_for_PHP_Standalone'))
 );
 
 
