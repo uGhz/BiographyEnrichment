@@ -398,7 +398,7 @@ $(document).ready(function () {
                                              iconName: this._iconName
                                          });
          this._container         = $(mustacheRendering);
-         this._statsContainer    = this._container.find("div.statistic");
+         // this._statsContainer    = this._container.find("div.statistic");
      
          // Activer la ResultArea :
          // - la vider,
@@ -413,6 +413,7 @@ $(document).ready(function () {
              this._clear();
              
              var _self = this;
+             /*
              this._container.on("click", "a.header", $.proxy(_self._askForItemDetails, _self));
              this._container.on("click", "button.catalog-link", function () {
                  window.open($(this).attr("data-catalog-url"));
@@ -421,7 +422,8 @@ $(document).ready(function () {
                  window.open($(this).attr("data-online-access-url"));
              });
              this._container.on("click", "button.more-results", $.proxy(_self._handleMoreResultsAction, _self));
-
+             */
+             
              this._container.appendTo(this._searchArea.getResultsContainer());
          },
          
@@ -430,13 +432,6 @@ $(document).ready(function () {
              this._clear();
              return this._askForResults.call(this, this._searchArea.getSearchString(), true);
          },
-         
-         // Fonction publique, que les SearchArea sont susceptibles d'appeler.
-         /*
-         getStats: function () {
-             return parseInt(this._currentTotalResults, 10);
-         },
-         */
          
          mustacheTemplate: function () {
              var template = $('#empty-results-area-template').html();
@@ -485,14 +480,11 @@ $(document).ready(function () {
          _buildResultItem: function (dataItem) {
              
              var newDomItem = $(Mustache.render(dataItem.mustacheTemplate, dataItem));
-             
-             // Stockage de données spécifiques à l'item
-             // newDomItem.data("catalog-url", dataItem.catalogUrl);
-             // newDomItem.data("isbn", dataItem.isbn);
-
              return $(newDomItem);
          },
 
+         
+         /*
          _setItemLoadingStateOn: function (domItem) {
              domItem.find(".dimmer").addClass("active");
          },
@@ -500,6 +492,7 @@ $(document).ready(function () {
          _setItemLoadingStateOff: function (domItem) {
              domItem.find(".dimmer").removeClass("active");
          },
+         */
          
          _handleNewResultSet: function (resultSet) {
            console.log("_handleNewResultSet has been called !");
@@ -523,7 +516,6 @@ $(document).ready(function () {
              this._container.find(".ui.table").append($("<tbody></tbody>")).append(listRoot.children("tr"));
              
              // Supprimer le bouton "Plus de résultats".
-             // this._container.find("button.more-results").remove();
              this._container.find("div.message").remove();
              
              if (resultSet.warningMessage === resultSet.WARNING_MESSAGE.TOO_MUCH_RESULTS) {
@@ -536,7 +528,8 @@ $(document).ready(function () {
          },
          
          _clear: function() {
-             this._container.children(".ui.table tbody").empty();
+        	 console.log("ResultsArea._clear called !");
+             this._container.children(".ui.table").empty();
              this._container.children(".message").remove();
 
          }
