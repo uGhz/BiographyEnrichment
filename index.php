@@ -3,11 +3,11 @@ ini_set('display_errors', FALSE);
 ini_set('max_execution_time', 120);
 ini_set('error_log', join(
 	DIRECTORY_SEPARATOR,
-	array($_SERVER['DOCUMENT_ROOT'], 'BiographyEnrichment', 'logs', 'error.log')));
+	array(realpath(), 'logs', 'error.log')));
 
 define('OFFLINE_SOURCE_DIRECTORY', join(
 	DIRECTORY_SEPARATOR,
-	array($_SERVER['DOCUMENT_ROOT'], 'BiographyEnrichment')));
+	array(realpath())));
 
 set_include_path(
 get_include_path()
