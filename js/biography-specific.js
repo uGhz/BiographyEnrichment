@@ -121,26 +121,12 @@ $(document).ready(function () {
          
          // Propriétés gérant l'état du modèle
          this._currentQueryString    = "";
-         this._currentPageNumber     = 0;
-         this._currentTotalOfResults = 0;
-         this._moreResultsAvailable  = false;
 
      }
 
      FacadeDataProvider.prototype = {
          
-         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
-    		 /*
-         moreResultsAvailable: function () {
-             var lastPageNumber = Math.ceil(this._currentTotalOfResults / this._MAX_RESULTS_PER_PAGE);
-             if (lastPageNumber > this._currentPageNumber) {
-                 return true;
-             }
-             
-             return false;
-         },
-         */
-         
+       
          // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
          getFreshSearchResults: function ( searchString ) {
 
@@ -150,24 +136,7 @@ $(document).ready(function () {
              return this._sendRequest(queryUrl);
          },
          
-         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
-         /*
-         getNextSearchResults: function () {
-             
-             var queryUrl = this._analyzer.buildRequestUrl(this._currentQueryString);
-             
-             return this._sendRequest( queryUrl );
-             
-         },
-         */
-         
-         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
-         /*
-         getTotalOfResults: function () {
-           return this._currentTotalOfResults;  
-         },
-         */
-         
+        
          _sendRequest: function ( queryUrl ) {
              
              var _self = this;
@@ -185,59 +154,20 @@ $(document).ready(function () {
              ajaxPromise.done(function (response) {
                  
                      _self._analyzer.analyze(response);
-                     /*
-                     _self._currentPageNumber        = _self._analyzer.getPageNumber();
-                     _self._currentTotalOfResults    = _self._analyzer.getTotalOfResults();
-                     */
+
                      var resultSet                   = _self._analyzer.getResultSet();
                  
                      console.log("_sendRequest. Data found !");
-                     /*
-                     console.log("_self._currentPageNumber : " + _self._currentPageNumber);
-                     console.log("_self._currentTotalOfResults : " + _self._currentTotalOfResults);
-                     */
+
                  
                      _self._analyzer.unsetData();
                      promisedResults.resolve(resultSet);
-                     // searchResultView._handleNewResultSet(resultSet);
              });
              
              ajaxPromise.always(function () {
-                     // console.log("The request for _sendRequest is complete!");
+                    console.log("The request for _sendRequest is complete!");
              });
 
-             return promisedResults;
-         },
-     
-         // Fonction publique, que les ResultAreas sont susceptibles d'appeler.
-         getDetailedItem: function ( url ) {
-             // @todo supprimer le calcul suivant
-             var itemIdentifier = url.slice(url.indexOf("?") + 1);
-             var _self = this;
-             var promisedResults = $.Deferred();
-             
-             
-             // console.log("Query String : " + queryString);
-             var queryUrl = _self._analyzer.buildItemUrl(itemIdentifier);
-             console.log("About to request : " + queryUrl);
-             
-             var ajaxPromise = $.ajax({
-                 url: queryUrl,
-                 dataType: _self._DATA_TYPE
-             });
-             
-             
-             ajaxPromise.done(function (response) {
-                     var detailedItem = _self._analyzer.getAsDataItem(response);
-                     // console.log("Copies found !");
-                     promisedResults.resolve(detailedItem);
-             });
-             
-             
-             ajaxPromise.always(function () {
-                 // console.log("Within callback of promise.");
-             });
-             
              return promisedResults;
          }
      };
@@ -263,114 +193,20 @@ $(document).ready(function () {
         },
     
         // Implémentation OK
-        getPageNumber: function () {
-            return this._pageNumber;
-        },
-    
-        // Implémentation OK
-        getTotalOfResults: function () {
-            return this._numberOfResults;
-        },
-    
-        // Implémentation OK
         getResultSet: function () {
             return this._resultingResultSet;
         },
         
         // Implémentation OK
         buildRequestUrl: function (searchString) {
-            
-            // http://www2.biusante.parisdescartes.fr/perio/index.las?do=rec&let=0&rch=human+genetics
-            /*
-        	var urlArray = [
-                "proxy-viaf.php",
-                encodeURIComponent(searchString)
-            ];
-            
-            if (pageNumber) {
-                urlArray = urlArray.concat([
-                    "&p=",
-                    encodeURIComponent(pageNumber)
-                ]);
-            }
-            
-            var url = urlArray.join("");
-            */
-        	var url = "proxy-viaf.php?viaf-id=" + searchString;
-            return url;
-        },
-        
-        // Implémentation OK
-        buildItemUrl: function () {
-            return null;
-        },
-        
-        // Implémentation OK
-        _extractPageNumber: function ($searchScope) {
-            var result = 1;
-            
-            // var wrappingTable = this._data.find("#table242");
-            
-            var $flecheGauche = $searchScope
-                            // .find("tr:nth-child(1)>td")
-                            .find("img[src$='flecheptg.gif'][alt^='page ']");
-            
-            console.log("EPeriodicalSpecificDataAnalyzer. $flecheGauche found : " + $flecheGauche.length);
-            if ($flecheGauche.length > 0) {
-                
-                var urlPagePrecedente = $flecheGauche.parent().attr("href");
-                console.log("EPeriodical. urlPagePrecedente found : " + urlPagePrecedente);
-                var regexResult = /p=(\d+)/g.exec(urlPagePrecedente);
-                
-                if (regexResult) {
-                    result = parseInt(regexResult[1], 10) + 1;
-                }
-            }
-                
-            console.log("EPeriodical page number : " + result);
-            return result;
+            return "proxy-viaf.php?viaf-id=" + searchString;;
         },
 
         // Implémentation OK
         _buildResultSet: function () {
         	
         	console.log("ViafDataAnalyzer. Construction des résultats...");
-        	/*
-            var $rawData = $("<html></html>").append($("<body></body>")).append(this._data);
-            // console.log("EPeriodical. $rawData : " + $rawData);
-            // console.log("EPeriodical. $rawData HTML : " + $rawData.html());
-            
-            var resultSet = new DataResultSet();
-            
-            var wrappingTable = $rawData.find('#table242').first();
-            // console.log("Tables in $rawData : " + $rawData.find('table').length);
-            
-            // Récupérer le nombre de résultats
-            var tempVar = parseInt($rawData.find(".nombre-resultats").text(), 10);
-            if (isNaN(tempVar)) {
-            	tempVar = 0;
-            }
-            console.log("EPeriodical. nombre-resultats : '" + tempVar + "'");
-            this._numberOfResults = tempVar;
-            
-            // Calculer le numéro de la page courante
-            this._pageNumber = this._extractPageNumber(wrappingTable);
 
-            // Récupérer, ligne à ligne, les données, les mettre en forme et les attacher à la liste
-            var tempItems = [];
-            var tempDataItem = null;
-
-            var _self = this;
-
-            $rawData.find('.ligne-titre').each(function (index, value) {
-                    tempDataItem = _self._buildDataItem($(value));
-                    tempItems.push(tempDataItem);
-            });
-
-            resultSet.results = tempItems;
-
-            this._resultingResultSet = resultSet;
-            */
         	console.log("ViafDataAnalyzer. Data : " + this._data);
         	var _self = this;
         	var resultSet = new DataResultSet();
@@ -420,10 +256,6 @@ $(document).ready(function () {
 
             item.value = pieceOfData[1];
             return item;
-        },
-
-        getAsDataItem: function () {
-            throw "Exception : UnsupportedOperationException";
         }
 
     };
