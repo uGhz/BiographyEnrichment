@@ -385,9 +385,9 @@ $(document).ready(function () {
          this._iconName      = iconName;
          
          // Déclarer les autres propriétés
-         this._currentTotalResults   = null;
+         // this._currentTotalResults   = null;
          this._container             = null;
-         this._statsContainer        = null;
+         // this._statsContainer        = null;
      
          // Construire le balisage HTML/CSS
          var mustacheRendering   = Mustache.render(
