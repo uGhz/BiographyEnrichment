@@ -153,8 +153,7 @@ body {
 		</div>
 	</div>
 
-	<script id="empty-results-area-template"
-		type="mustache/x-tmpl-mustache">
+	<script id="empty-results-area-template" type="mustache/x-tmpl-mustache">
         <div class="ui dimmable">
                     <h2 class="ui header"><i class="{{iconName}} icon"></i>
                         <div class="content">
@@ -168,7 +167,7 @@ body {
             <div class="ui inverted dimmer">
                 <div class="ui text loader">Interrogation de VIAF...</div>
             </div>
-            <table class="ui fixed compact table"></table>
+            <table class="ui fixed compact table"><tbody></tbody></table>
         </div>
     </script>
 

@@ -90,12 +90,12 @@ $(document).ready(function () {
     }
     
     
-    function ViafModel(mainMediator) {
+    function ViafModel(application) {
     	
-    	this.normalizedIds = [];
-    	this.wikipediaLinks = [];
+    	// this.normalizedIds = [];
+    	// this.wikipediaLinks = [];
     	this._currentViafId = "";
-    	this.mainMediator = mainMediator;
+    	this.application = application;
     }
     
     ViafModel.prototype = {
@@ -107,15 +107,7 @@ $(document).ready(function () {
     		this._getViafData();
     		
     		// Envoie un événement signalant le début d'une requête.
-    		this.mainMediator.publish(this.mainMediator.VIAF_REQUEST_SENT);
-    	},
-    	
-    	getNormalizedIds: function () {
-    		return this.normalizedIds;
-    	},
-    	
-    	getWikipediaLinks: function () {
-    		return this.wikipediaLinks;
+    		this.application.mainMediator.publish(this.application.mainMediator.VIAF_REQUEST_SENT);
     	},
     	
     	_getViafData: function() {
@@ -132,11 +124,12 @@ $(document).ready(function () {
             ajaxPromise.done(function (response) {
                 
                 console.log("_getViafData. Data found !");
-                _self._analyzeViafResponse(response);
+                var items = _self._analyzeViafResponse(response);
                 // _self._analyzer.unsetData();
                 
-             // TODO. Envoie un événement signalant la fin d'une requête.
-                _self.mainMediator.publish(_self.mainMediator.VIAF_RESPONSE_RECEIVED);
+                _self.application.state.setNormalizedIds(items);
+               // Envoie un événement signalant la fin d'une requête.
+               //  _self.application.mainMediator.publish(_self.application.mainMediator.VIAF_RESPONSE_RECEIVED);
                 
                 promisedResults.resolve();
             });
@@ -157,38 +150,43 @@ $(document).ready(function () {
         	var tempItems = [];
         	var pairItem = null;
 
-        	var rawData = response[0];
+        	var rawData = response;
         	for (var key in rawData) {
         		  if (rawData.hasOwnProperty(key)) {
         		    console.log(key + " -> " + rawData[key]);
-        		    pairItem = new DataItem();
+        		    pairItem = new PairItem();
         		    
         		    if (key == "Wikipedia") {
         		    	this.wikipediaLinks = rawData[key];
-        		    }
+        		    } else {
         		    
-                    if (ReferenceData.ViafAuthorities[key]) {
-                    	pairItem.label = ReferenceData.ViafAuthorities[key];
-                    } else {
-                    	pairItem.label = key;
-                    }
+	                    if (ReferenceData.ViafAuthorities[key]) {
+	                    	pairItem.label = ReferenceData.ViafAuthorities[key];
+	                    } else {
+	                    	pairItem.label = key;
+	                    }
+	                    
+	                    pairItem.value = rawData[key];
+	                    tempItems.push(pairItem);
+        		    }
 
-                    pairItem.value = rawData[key];
-                    tempItems.push(pairItem);
+
         		  }
         	}
         	
+        	console.log("_analyzeViafResponse. Nombre d'IDs : " + tempItems.length);
             // this._resultingResultSet = this._data;
-            this.normalizedIds = tempItems;
+            // this.normalizedIds = tempItems;
+            return tempItems;
     	}
     }
     
     
-    function ViafFormView(mainMediator) {
+    function ViafFormView(application) {
         // Déclarations et initialisations des propriétés
         this._form                  = $("#viafSearchForm");
         this._currentSearch = "";
-        this.mainMediator = mainMediator;
+        this.application = application;
         
     }
     
@@ -207,7 +205,7 @@ $(document).ready(function () {
                 event.preventDefault();
                 
                 this._currentSearch = this._form.find("input[type='text']").val();
-    			this.mainMediator.publish(this.mainMediator.VIAF_REQUESTED_ID_CHANGED);
+    			this.application.mainMediator.publish(this.application.mainMediator.VIAF_REQUESTED_ID_CHANGED);
     		},
     		
     		getCurrentSearch: function() {
@@ -215,10 +213,10 @@ $(document).ready(function () {
     		}
     }
     
-    function ViafNormalizedIdsView(mainMediator) {
+    function ViafNormalizedIdsView(application) {
         // Déclarations et initialisations des propriétés
         this._root = null;
-        this.mainMediator = mainMediator;
+        this.application = application;
         this.normalizedIds = [];
         this._itemContainer = null;
     }
@@ -227,7 +225,7 @@ $(document).ready(function () {
     		
     		initialize: function () {
     			
-    			this._root = $("#viafSearchresults");
+    			this._root = $("#viafSearchResults");
     			
     			
     	         var mustacheRendering   = Mustache.render(
@@ -236,10 +234,34 @@ $(document).ready(function () {
                              title: "VIAF",
                              subtitle: "Autorités en tous genres",
                              iconName: "student",
-                         });
+                         }
+                 );
+    	         
     	         this._itemContainer = $(mustacheRendering);
     	         
     	         this._itemContainer.appendTo(this._root)
+    		},
+    		
+    		update: function() {
+    			console.log("ViafNormalizedIdsView is about to be updated !");
+    			var ids = this.application.state.getNormalizedIds();
+    			var length = ids.length;
+    			console.log(length);
+    			
+    			var renderMaterial = "";
+    			var itemRendered = "";
+    			for (var index = 0; index < length; index++) {
+    				itemRendered = Mustache.render(
+                            this.mustacheItemTemplate,
+                            ids[index]
+                    );
+    				renderMaterial += itemRendered;
+    				console.log(itemRendered);
+    			}
+    			
+    			var $itemContainer = this._root.find(".ui.table > tbody").first();
+    			$(renderMaterial).appendTo($itemContainer);
+
     		},
     		
             mustacheTemplate: function () {
@@ -247,14 +269,42 @@ $(document).ready(function () {
                 Mustache.parse(template);
                 return template;
             }(),
+            
+            mustacheItemTemplate: function () {
+                var template = $('#data-item-template').html();
+                Mustache.parse(template);
+                return template;
+            } ()
     		
+    }
+    
+    function BiographyApplicationState(application) {
+    	this.normalizedIds = [];
+    	this.wikipediaLinks = [];
+    	this.currentViafSearch = "";
+    	this.application = application;
+    }
+    
+    BiographyApplicationState.prototype = {
     		setNormalizedIds: function (normalizedIds) {
     			this.normalizedIds = normalizedIds;
+    			
+    			// Mise à jour de la liste d'IDs
+    			this.application.viafNormalizedIdsView.update();
     		},
     		
-    		update: function() {
-    			
-    		}
+    		setWikipediaLinks: function (wikipediaLinks) {
+    			this.wikipediaLinks = wikipediaLinks;
+    		},
+    		
+    		setCurrentViafSearch: function (viafSearch) {
+    			this.currentViafSearch = viafSearch;
+    		},
+    		
+    		getNormalizedIds: function () {
+    			return this.normalizedIds;
+    		},
+    		
     }
     
 
@@ -263,19 +313,22 @@ $(document).ready(function () {
     	this.mainMediator = null;
     	this.viafFormView = null;
     	this.viafNormalizedIdsView = null;
+    	this.state = {};
     }
     
     BiographyApplication.prototype = {
     		initialize: function () {
     			this.mainMediator = new Mediator();
     		    
-    		    this.viafModel = new ViafModel(this.mainMediator);
+    		    this.viafModel = new ViafModel(this);
     		    
-    			this.viafFormView = new ViafFormView(this.mainMediator);
+    			this.viafFormView = new ViafFormView(this);
     			this.viafFormView.initialize();
     			
-    			this.viafNormalizedIdsView = new ViafNormalizedIdsView(this.mainMediator);
+    			this.viafNormalizedIdsView = new ViafNormalizedIdsView(this);
     			this.viafNormalizedIdsView.initialize();
+    			
+    			this.state = new BiographyApplicationState(this);
     		    
     		    this.mainMediator.subscribe(
     		    		// $.proxy(this._updateCurrentRequest, this)
