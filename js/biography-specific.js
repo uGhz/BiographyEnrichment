@@ -86,7 +86,6 @@ $(document).ready(function () {
                 case "ViafData":
                     parametersMap = {
                         implementation:     new ViafDataAnalyzer(),
-                        maxResultsPerPage:  20,
                         dataType:           "json"
                     };
                     break;
@@ -116,7 +115,6 @@ $(document).ready(function () {
      function FacadeDataProvider( parametersMap ) {
          // Propriétéliées au paramétrage du modèle
          this._analyzer              = parametersMap.implementation;
-         this._MAX_RESULTS_PER_PAGE  = parametersMap.maxResultsPerPage;
          this._DATA_TYPE             = parametersMap.dataType;
          
          // Propriétés gérant l'état du modèle
@@ -174,8 +172,6 @@ $(document).ready(function () {
     
     function ViafDataAnalyzer() {
         this._data = null;
-        this._pageNumber = 0;
-        this._numberOfResults = 0;
         this._resultingResultSet = null;
     }
     
@@ -202,7 +198,8 @@ $(document).ready(function () {
             return "proxy-viaf.php?viaf-id=" + searchString;;
         },
 
-        // Implémentation OK
+        // Construit un DataResultSet à partir des données brutes stockées dans _data
+        // et le stocke dans _resultingResultSet.
         _buildResultSet: function () {
         	
         	console.log("ViafDataAnalyzer. Construction des résultats...");
@@ -229,18 +226,6 @@ $(document).ready(function () {
 
         
             /*
-             * TODO. A METTRE A JOUR.
-             * $("#table247"), 2ème ligne tr, 1er td, 1er p, text, pageNumber après "Nombre de réponses : " et avant le 1er "&"
-             * Si table247 possède moins de 4 lignes tr, la recherche n'a ramené aucun résultat.
-             * #table247, chaque tr[x] (3 < x < tr.length) correspond à une référence d'ouvrage
-             * chaque tr :
-             * - 1er td : Type de document / d'accès
-             * -2ème td :
-             *      - p > a > b.text -> Titre,
-             *      - p> a.href -> URL d'accès en ligne
-             *      - div > i.text -> Description, commentaire
-             *      - div.text -> Auteurs, entre "Par " et " . " (?)
-             *      - div > font.text -> Tag (plusieurs occurrences)
              *
             */
         _buildDataItem: function (pieceOfData) {
@@ -261,9 +246,6 @@ $(document).ready(function () {
     };
     /*********************************
      *   CLASS ViafSearchWidget
-     *
-     *
-         Classe gérant le formulaire de recherche et englobant les différentes ResultsArea
      */
     function ViafSearchWidget() {
     	
@@ -413,16 +395,8 @@ $(document).ready(function () {
              this._clear();
              
              var _self = this;
-             /*
-             this._container.on("click", "a.header", $.proxy(_self._askForItemDetails, _self));
-             this._container.on("click", "button.catalog-link", function () {
-                 window.open($(this).attr("data-catalog-url"));
-             });
-             this._container.on("click", "button.online-access-link", function () {
-                 window.open($(this).attr("data-online-access-url"));
-             });
-             this._container.on("click", "button.more-results", $.proxy(_self._handleMoreResultsAction, _self));
-             */
+             
+             // Ajouter ici les éventuels event listeners.
              
              this._container.appendTo(this._searchArea.getResultsContainer());
          },
