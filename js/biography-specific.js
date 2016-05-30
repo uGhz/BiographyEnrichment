@@ -205,6 +205,7 @@ $(document).ready(function () {
                 event.preventDefault();
                 
                 this._currentSearch = this._form.find("input[type='text']").val();
+                this.application.state.setCurrentViafSearch(this._currentSearch);
     			this.application.mainMediator.publish(this.application.mainMediator.VIAF_REQUESTED_ID_CHANGED);
     		},
     		
@@ -237,9 +238,15 @@ $(document).ready(function () {
                          }
                  );
     	         
-    	         this._itemContainer = $(mustacheRendering);
+    	         var $contents = $(mustacheRendering);
     	         
-    	         this._itemContainer.appendTo(this._root)
+    	         $contents.appendTo(this._root);
+    	         
+    	         this._itemContainer = this._root.find(".ui.table > tbody").first();
+    		},
+    		
+    		_clearItems: function () {
+    			this._itemContainer.empty();
     		},
     		
     		update: function() {
@@ -259,8 +266,10 @@ $(document).ready(function () {
     				console.log(itemRendered);
     			}
     			
-    			var $itemContainer = this._root.find(".ui.table > tbody").first();
-    			$(renderMaterial).appendTo($itemContainer);
+    			// var $itemContainer = this._root.find(".ui.table > tbody").first();
+    			
+    			this._clearItems();
+    			$(renderMaterial).appendTo(this._itemContainer);
 
     		},
     		
@@ -299,6 +308,9 @@ $(document).ready(function () {
     		
     		setCurrentViafSearch: function (viafSearch) {
     			this.currentViafSearch = viafSearch;
+    			
+    			// Mise à jour du ViafModel
+    			this.application.viafModel.setCurrentViafId(this.currentViafSearch);
     		},
     		
     		getNormalizedIds: function () {
@@ -330,10 +342,6 @@ $(document).ready(function () {
     			
     			this.state = new BiographyApplicationState(this);
     		    
-    		    this.mainMediator.subscribe(
-    		    		// $.proxy(this._updateCurrentRequest, this)
-    		    		this.mainMediator.VIAF_REQUESTED_ID_CHANGED, $.proxy(this.onViafRequestedIdChanged, this)
-    		    );
     		},
     		
     		onViafRequestedIdChanged: function () {
