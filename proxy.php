@@ -1,10 +1,24 @@
 <?php 
 // Example : http://viaf.org/viaf/102333412/justlinks.json
 // $dataSourceBaseUrl = "http://www2.biusante.parisdescartes.fr/developpement/periodiques-electroniques/index.las";
-$dataSourceBaseUrl = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/justlinks.json";
 
 
-$url = $dataSourceBaseUrl;// . '?' . $_SERVER['QUERY_STRING'];
+function getWikimediaUrl($imageFilename) {
+	
+}
+
+$datasource = $_GET["source"];
+switch ($datasource) {
+	case "viaf":
+			$url = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/justlinks.json";
+			break;
+	case "wikidata":
+		// https://www.wikidata.org/w/api.php?action=wbgetclaims&props=&entity=Q937&property=P18
+		
+			$url = "http://www.wikidata.org/wiki/Special:EntityData/" . $_GET["wikidata-id"] . ".json";
+			break;
+}
+
 
 // echo $url;
 

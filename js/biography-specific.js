@@ -94,26 +94,26 @@ $(document).ready(function () {
     	
     	// this.normalizedIds = [];
     	// this.wikipediaLinks = [];
-    	this._currentViafId = "";
+    	// this._currentViafId = "";
     	this.application = application;
     }
     
     ViafModel.prototype = {
     	
     	setCurrentViafId: function (viafId) {
-    		this._currentViafId = viafId;
+    		// this._currentViafId = viafId;
     		
-    		// TODO. Déclenche une nouvelle requête auprès viaf.org.
-    		this._getViafData();
+    		// Déclenche une nouvelle requête auprès viaf.org.
+    		this._getViafData(viafId);
     		
     		// Envoie un événement signalant le début d'une requête.
     		this.application.mainMediator.publish(this.application.mainMediator.VIAF_REQUEST_SENT);
     	},
     	
-    	_getViafData: function() {
+    	_getViafData: function(viafId) {
             var _self = this;
             var promisedResults = $.Deferred();
-            var queryUrl = "proxy-viaf.php?viaf-id=" + this._currentViafId;
+            var queryUrl = "proxy.php?source=viaf&viaf-id=" + viafId;
             
             console.log("About to request : " + queryUrl);
             var ajaxPromise = $.ajax({
@@ -167,6 +167,11 @@ $(document).ready(function () {
 	                    }
 	                    
 	                    pairItem.value = rawData[key];
+	                    
+	                    if (key == "WKP") {
+	                    	_self.application.state.setCurrentWikidataId(rawData[key]);
+	                    }
+	                    
 	                    tempItems.push(pairItem);
         		    }
 
@@ -179,6 +184,96 @@ $(document).ready(function () {
             // this.normalizedIds = tempItems;
             return tempItems;
     	}
+    }
+    
+    function WikidataModel(application) {
+    	this.application = application;
+    }
+    
+    WikidataModel.prototype = {
+        	setCurrentWikidataId: function (wikidataId) {
+        		// this._currentViafId = viafId;
+        		
+        		// Déclenche une nouvelle requête auprès viaf.org.
+        		this._getWikidataData(wikidataId);
+        		
+        		// Envoie un événement signalant le début d'une requête.
+        		// this.application.mainMediator.publish(this.application.mainMediator.VIAF_REQUEST_SENT);
+        	},
+        	
+        	_getWikidataData: function(wikidataId) {
+                var _self = this;
+                var promisedResults = $.Deferred();
+                var queryUrl = "proxy.php?source=wikidata&wikidata-id=" + wikidataId;
+                
+                console.log("About to request : " + queryUrl);
+                var ajaxPromise = $.ajax({
+                    url: queryUrl,
+                    dataType: "json"
+                });
+                
+                ajaxPromise.done(function (response) {
+                    
+                    console.log("_getWikidataData. Data found !");
+                    var imageUrl = _self._analyzeWikidataResponse(response, wikidataId);
+                    // _self._analyzer.unsetData();
+                    _self.application.state.setWikidataImageUrl(imageUrl);
+                   //  _self.application.state.setNormalizedIds(items);
+                   // Envoie un événement signalant la fin d'une requête.
+                   //  _self.application.mainMediator.publish(_self.application.mainMediator.VIAF_RESPONSE_RECEIVED);
+                    
+                    promisedResults.resolve();
+                });
+                
+                ajaxPromise.always(function () {
+                       console.log("The request for _getViafData is complete!");
+                });
+
+                return promisedResults;
+        	},
+        	
+        	_analyzeWikidataResponse: function (response, wikidataId) {
+            	console.log("_analyzeWikidataResponse. Construction des résultats...");
+
+            	console.log("_analyzeWikidataResponse. Data : ");
+            	console.dir(response);
+            	// [root] entities -> [ID] -> claims -> P18 (= image) -> [0] -> mainsnak -> datavalue -> value
+            	
+            	// Accès via : https://commons.wikimedia.org/wiki/File: [+ filename]
+            	
+            	var _self = this;
+            	var result = "";
+
+            	var rawData = response;
+            	var node = null;
+            	if (rawData.hasOwnProperty("entities")) {
+            		node = rawData["entities"];
+            		if (node.hasOwnProperty(wikidataId)) {
+            			node = node[wikidataId];
+            			if (node.hasOwnProperty("claims")) {
+            				node = node["claims"];
+            				if (node.hasOwnProperty("P18")) {
+            					node = node["P18"][0];
+            					if (node.hasOwnProperty("mainsnak")) {
+            						node = node["mainsnak"];
+                					if (node.hasOwnProperty("datavalue")) {
+                						node = node["datavalue"];
+                    					if (node.hasOwnProperty("value")) {
+                    						result = node["value"];
+                    					}
+                					}
+            					}
+            				}
+            			}
+            		}
+            	}
+            	
+            	result = "https://commons.wikimedia.org/wiki/File:" + result;
+            	console.log("_analyzeViafResponse. Résultat : " + result);
+                // this._resultingResultSet = this._data;
+                // this.normalizedIds = tempItems;
+                return result;
+        	}
     }
     
     
@@ -263,7 +358,7 @@ $(document).ready(function () {
                             ids[index]
                     );
     				renderMaterial += itemRendered;
-    				console.log(itemRendered);
+    				// console.log(itemRendered);
     			}
     			
     			// var $itemContainer = this._root.find(".ui.table > tbody").first();
@@ -291,6 +386,8 @@ $(document).ready(function () {
     	this.normalizedIds = [];
     	this.wikipediaLinks = [];
     	this.currentViafSearch = "";
+    	this.wikidataId = "";
+    	this.wikidataImageUrl = "";
     	this.application = application;
     }
     
@@ -313,6 +410,20 @@ $(document).ready(function () {
     			this.application.viafModel.setCurrentViafId(this.currentViafSearch);
     		},
     		
+    		setCurrentWikidataId: function (wikidataId) {
+    			this.wikidataId = wikidataId;
+    			
+    			// Mise à jour du WikidataModel
+    			this.application.wikidataModel.setCurrentWikidataId(this.wikidataId);
+    		},
+    		
+    		setWikidataImageUrl: function (url) {
+    			this.wikidataImageUrl = url;
+    			
+    			// Mise à jour du WikidataImageView
+    			// this.application.wikidataModel.setCurrentWikidataId(this.wikidataId);
+    		},
+    		
     		getNormalizedIds: function () {
     			return this.normalizedIds;
     		},
@@ -322,6 +433,7 @@ $(document).ready(function () {
 
     function BiographyApplication() {
     	this.viafModel = null;
+    	this.wikidataModel = null;
     	this.mainMediator = null;
     	this.viafFormView = null;
     	this.viafNormalizedIdsView = null;
@@ -333,6 +445,7 @@ $(document).ready(function () {
     			this.mainMediator = new Mediator();
     		    
     		    this.viafModel = new ViafModel(this);
+    		    this.wikidataModel = new WikidataModel(this);
     		    
     			this.viafFormView = new ViafFormView(this);
     			this.viafFormView.initialize();
