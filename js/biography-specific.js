@@ -89,6 +89,97 @@ $(document).ready(function () {
     		}
     }
     
+    ////
+    
+    function ViafFileModel(application) {
+    	
+    	// this.normalizedIds = [];
+    	// this.wikipediaLinks = [];
+    	// this._currentViafId = "";
+    	this.application = application;
+    }
+    
+    ViafFileModel.prototype = {
+    	
+    	setCurrentViafId: function (viafId) {
+    		
+    		// Déclenche une nouvelle requête auprès viaf.org.
+    		this._getViafData(viafId);
+
+    	},
+    	
+    	_getViafData: function(viafId) {
+            var _self = this;
+            var promisedResults = $.Deferred();
+            var queryUrl = "proxy.php?source=viaf-file&viaf-id=" + viafId;
+            
+            console.log("About to request : " + queryUrl);
+            var ajaxPromise = $.ajax({
+                url: queryUrl,
+                dataType: "xml"
+            });
+            
+            ajaxPromise.done(function (response) {
+                
+                console.log("ViafFileModel._getViafData. Data found !");
+                var items = _self._analyzeViafResponse(response);
+                
+                // _self.application.state.setNormalizedIds(items);
+
+                promisedResults.resolve();
+            });
+            
+            ajaxPromise.always(function () {
+                   console.log("ViafFileModel. The request for _getViafData is complete!");
+            });
+
+            return promisedResults;
+    	},
+    	
+    	_analyzeViafResponse: function (response) {
+        	console.log("ViafFileModel._analyzeViafResponse. Construction des résultats...");
+        	console.log(response);
+        	
+        	
+        	var _self = this;
+
+        	
+        	var results = [];
+        	
+        	var $data = $(response);
+        	// console.log($data);
+        	// var $nodes = $data.find("ns2:x400s > ns2:x400 > ns2:datafield");
+        	var $nodes = $data.find("x400");
+        	
+        	console.log("ViafFileModel._analyzeViafResponse. Nombre de noeuds sélectionnés : " + $nodes.length);
+        	
+        	var resultObj = {};
+        	var tempNode = null;
+        	var temptext = "";
+        	$.each($nodes, function (index, value) {
+        		tempNode = $(this).find("subfield[code='a']");
+        		temptext = tempNode.text();
+        		// console.log("ns2 temp : " + temptext);
+        		if ( !( temptext in resultObj ) ) {
+        			resultObj[temptext] = 0;
+        		}
+        		
+        	});
+
+        	
+        	for(var key in resultObj){
+            	console.log(key);
+        		results.push(key);
+        	}
+        	
+
+        	
+            return results;
+    	}
+    }
+    
+    
+    ////
     
     function ViafLinksModel(application) {
     	
@@ -153,7 +244,7 @@ $(document).ready(function () {
         	var rawData = response;
         	for (var key in rawData) {
         		  if (rawData.hasOwnProperty(key)) {
-        		    console.log(key + " -> " + rawData[key]);
+        		    // console.log(key + " -> " + rawData[key]);
         		    pairItem = new PairItem();
         		    
         		    if (key == "Wikipedia") {
@@ -521,6 +612,7 @@ $(document).ready(function () {
     			
     			// Mise à jour du ViafLinksModel
     			this.application.viafLinksModel.setCurrentViafId(this.currentViafSearch);
+    			this.application.viafFileModel.setCurrentViafId(this.currentViafSearch);
     		},
     		
     		setCurrentWikidataId: function (wikidataId) {
@@ -550,6 +642,7 @@ $(document).ready(function () {
 
     function BiographyApplication() {
     	this.viafLinksModel = null;
+    	this.viafFileModel = null;
     	this.wikidataModel = null;
     	this.mainMediator = null;
     	this.viafFormView = null;
@@ -564,6 +657,7 @@ $(document).ready(function () {
     			this.mainMediator = new Mediator();
     		    
     		    this.viafLinksModel = new ViafLinksModel(this);
+    		    this.viafFileModel = new ViafFileModel(this);
     		    this.wikidataModel = new WikidataModel(this);
     		    
     			this.viafFormView = new ViafFormView(this);

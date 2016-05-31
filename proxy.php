@@ -12,6 +12,9 @@ switch ($datasource) {
 	case "viaf-links":
 			$url = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/justlinks.json";
 			break;
+	case "viaf-file":
+			$url = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/viaf.xml";
+			break;
 	case "wikidata":
 			$url = "https://www.wikidata.org/w/api.php?action=wbgetclaims&props=&entity=" . $_GET["wikidata-id"] . "&property=P18&format=json";
 		
