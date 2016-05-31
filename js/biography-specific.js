@@ -90,7 +90,7 @@ $(document).ready(function () {
     }
     
     
-    function ViafModel(application) {
+    function ViafLinksModel(application) {
     	
     	// this.normalizedIds = [];
     	// this.wikipediaLinks = [];
@@ -98,7 +98,7 @@ $(document).ready(function () {
     	this.application = application;
     }
     
-    ViafModel.prototype = {
+    ViafLinksModel.prototype = {
     	
     	setCurrentViafId: function (viafId) {
     		// this._currentViafId = viafId;
@@ -113,7 +113,7 @@ $(document).ready(function () {
     	_getViafData: function(viafId) {
             var _self = this;
             var promisedResults = $.Deferred();
-            var queryUrl = "proxy.php?source=viaf&viaf-id=" + viafId;
+            var queryUrl = "proxy.php?source=viaf-links&viaf-id=" + viafId;
             
             console.log("About to request : " + queryUrl);
             var ajaxPromise = $.ajax({
@@ -157,7 +157,8 @@ $(document).ready(function () {
         		    pairItem = new PairItem();
         		    
         		    if (key == "Wikipedia") {
-        		    	this.wikipediaLinks = rawData[key];
+        		    	// this.wikipediaLinks = rawData[key];
+        		    	_self.application.state.setWikipediaLinks(rawData[key]);
         		    } else {
         		    
 	                    if (ReferenceData.ViafAuthorities[key]) {
@@ -290,7 +291,7 @@ $(document).ready(function () {
     
     ViafFormView.prototype = {
     		
-    		initialize: function(viafModel) {
+    		initialize: function(viafLinksModel) {
     			
     			this._form          = $("#viafSearchForm");
     	        // Attacher les gestionnaires d'évènements
@@ -453,19 +454,26 @@ $(document).ready(function () {
     		
     		update: function() {
     			console.log("WikipediaLinksView is about to be updated !");
-    			var imageUrl = this.application.state.getWikipediaLinks();
-    			
+    			var wikipediaLinks = this.application.state.getWikipediaLinks();
+    			var length = wikipediaLinks.length;
     			// var renderMaterial = "";
+    			
+    			var re = new RegExp('.*//([a-z]*)\..*');
+    			
+    			var temp = {"links": []};
+    			for (var index = 0; index < length; index++) {
+    				temp.links.push( {
+    						"label": wikipediaLinks[index].replace(re, '[$1]'),
+    						"url": wikipediaLinks[index]
+    				});
+    			}
+    			
     			var itemRendered = Mustache.render(
                             this.mustacheTemplate,
-                            {
-                            	"title": "My title",
-                            	"imageUrl": imageUrl,
-                            	"description": "My short description."
-                            }
+                            temp
                 );
     			
-    			console.log();
+    			// console.log();
     			
     			this._clearItems(itemRendered);
     			$(itemRendered).appendTo(this._root);
@@ -473,7 +481,7 @@ $(document).ready(function () {
     		},
     		
             mustacheTemplate: function () {
-                var template = $('#image-card-template').html();
+                var template = $('#wikipedia-links-template').html();
                 Mustache.parse(template);
                 return template;
             }()
@@ -511,8 +519,8 @@ $(document).ready(function () {
     		setCurrentViafSearch: function (viafSearch) {
     			this.currentViafSearch = viafSearch;
     			
-    			// Mise à jour du ViafModel
-    			this.application.viafModel.setCurrentViafId(this.currentViafSearch);
+    			// Mise à jour du ViafLinksModel
+    			this.application.viafLinksModel.setCurrentViafId(this.currentViafSearch);
     		},
     		
     		setCurrentWikidataId: function (wikidataId) {
@@ -541,7 +549,7 @@ $(document).ready(function () {
     
 
     function BiographyApplication() {
-    	this.viafModel = null;
+    	this.viafLinksModel = null;
     	this.wikidataModel = null;
     	this.mainMediator = null;
     	this.viafFormView = null;
@@ -555,7 +563,7 @@ $(document).ready(function () {
     		initialize: function () {
     			this.mainMediator = new Mediator();
     		    
-    		    this.viafModel = new ViafModel(this);
+    		    this.viafLinksModel = new ViafLinksModel(this);
     		    this.wikidataModel = new WikidataModel(this);
     		    
     			this.viafFormView = new ViafFormView(this);
@@ -575,7 +583,7 @@ $(document).ready(function () {
     		},
     		
     		onViafRequestedIdChanged: function () {
-    			this.viafModel.setCurrentViafId(this.viafFormView.getCurrentSearch());
+    			this.viafLinksModel.setCurrentViafId(this.viafFormView.getCurrentSearch());
     		}
     }
     

@@ -9,7 +9,7 @@ function getWikimediaUrl($imageFilename) {
 
 $datasource = $_GET["source"];
 switch ($datasource) {
-	case "viaf":
+	case "viaf-links":
 			$url = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/justlinks.json";
 			break;
 	case "wikidata":

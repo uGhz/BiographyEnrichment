@@ -111,8 +111,8 @@ body {
 					<div class="two column row">
 						<div class="column" id="wikipediaLinksContainer">
 
-							<!-- Empty column -->
-
+							<!-- Placeholder for Wikipedia Links -->
+							
 						</div>
 						<div class="column" id="wikidataImageContainer">
 
@@ -125,7 +125,7 @@ body {
 		</div>
 
 		<div class="ui divider"></div>
-		<span><i class="copyright icon"></i> Gupta 2015</span>
+		<span><i class="copyright icon"></i> Gupta 2016</span>
 	</div>
 
 	<div class="ui inverted vertical footer segment">
@@ -212,7 +212,8 @@ body {
 	<script id="image-card-template" type="mustache/x-tmpl-mustache">
 							<div class="ui card">
 								<div class="content">
-									<img class="ui avatar image" src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Commons-logo.svg"> Wikimedia Commons
+									<img class="left floated mini ui image" src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Wikidata-logo-without-paddings.svg">
+									<div class="header">Wikidata</div>
 								</div>
 								<div class="image">
 									<img src="{{ imageUrl }}">
@@ -230,6 +231,35 @@ body {
 								</div>
 							</div>
     </script>
+    
+    
+    <script id="wikipedia-links-template" type="mustache/x-tmpl-mustache">
+<div class="ui segment">
+
+<h2 class="ui header">
+	<i class="student icon"></i>
+    <div class="content">
+        Wikipedia Links
+        <div class="sub header">En provenance de viaf.org</div>
+    </div>
+</h2>
+
+{{ #links.length }}
+<div class="ui middle aligned divided list">
+  {{ #links }}
+  <div class="item">
+    <img class="ui avatar image" src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png">
+    <div class="content">
+      <a class="header" href="{{ url }}">{{ label }}</a>
+    </div>
+  </div>
+  {{ /links }}
+</div>
+{{ /links.length }}
+</div>
+    </script>
+    
+    
 
 	<script src="mustache/mustache.min.js"></script>
 	<script src="js/biography-specific.js"></script>
