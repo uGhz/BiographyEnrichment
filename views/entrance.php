@@ -71,39 +71,57 @@ body {
 		<p>This is a basic fixed menu template using fixed size containers.</p>
 		<p>A text container is used for the main container, which is useful
 			for single column layouts</p>
-		
+
 		<div class="ui grid">
-			
+
 			<div class="eight wide column">
 				<form id="viafSearchForm" class="ui form segment">
 					<div class="field">
-						<label>Saisissez un identifiant VIAF&nbsp;:</label>
-						<input id="viaf-id" type="text" placeholder="96994048">
+						<label>Saisissez un identifiant VIAF&nbsp;:</label> <input
+							id="viaf-id" type="text" placeholder="96994048">
 					</div>
 					<button type="submit" class="ui submit button">Chercher</button>
 				</form>
-		
+
 				<div id="viafSearchResults" class="ui segment"></div>
 			</div>
-			
+
 			<div class="eight wide column">
-				<div class="ui segment">
-			        <h2 class="ui header"><i class="search icon"></i>
-                        <div class="content">
-                            VIAF Autosuggest
-                            <div class="sub header">Wise helper</div>
-                        </div>
-                    </h2>
-					<div class="ui fluid search">
-					  <div class="ui icon input">
-					    <input class="prompt" type="text" placeholder="Common passwords...">
-					    <i class="search icon"></i>
-					  </div>
-					  <div class="results"></div>
+				<div class="row">
+					<div class="ui segment">
+						<h2 class="ui header">
+							<i class="search icon"></i>
+							<div class="content">
+								VIAF Autosuggest
+								<div class="sub header">Wise helper</div>
+							</div>
+						</h2>
+						<div class="ui fluid search">
+							<div class="ui icon input">
+								<input class="prompt" type="text"
+									placeholder="Common passwords..."> <i class="search icon"></i>
+							</div>
+							<div class="results"></div>
+						</div>
+					</div>
+				</div>
+				<div class="ui divider"></div>
+				<div class="ui grid">
+
+					<div class="two column row">
+						<div class="column" id="wikipediaLinksContainer">
+
+							<!-- Empty column -->
+
+						</div>
+						<div class="column" id="wikidataImageContainer">
+
+							<!-- Placeholder for Wikidata Image -->
+
+						</div>
 					</div>
 				</div>
 			</div>
-			
 		</div>
 
 		<div class="ui divider"></div>
@@ -153,7 +171,8 @@ body {
 		</div>
 	</div>
 
-	<script id="empty-results-area-template" type="mustache/x-tmpl-mustache">
+	<script id="empty-results-area-template"
+		type="mustache/x-tmpl-mustache">
         <div class="ui dimmable">
                     <h2 class="ui header"><i class="{{iconName}} icon"></i>
                         <div class="content">
@@ -171,7 +190,7 @@ body {
         </div>
     </script>
 
-	<script id="data-item-template" type="mustache/x-tmpl-mustache">
+	<script id="pair-item-template" type="mustache/x-tmpl-mustache">
         <tr>
 			<td>{{ label }}</td>
 			<td> 
@@ -188,6 +207,28 @@ body {
                     {{ /value.length }}    
 			</td>
         </tr>
+    </script>
+
+	<script id="image-card-template" type="mustache/x-tmpl-mustache">
+							<div class="ui card">
+								<div class="content">
+									<img class="ui avatar image" src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Commons-logo.svg"> Wikimedia Commons
+								</div>
+								<div class="image">
+									<img src="{{ imageUrl }}">
+								</div>
+								<div class="content">
+									<a class="header">{{ title }}</a>
+									<div class="meta">
+										<span class="date">Joined in 2013</span>
+									</div>
+									<div class="description">{{ description }}</div>
+								</div>
+								<div class="extra content">
+									<a> <i class="user icon"></i> 22 Friends
+									</a>
+								</div>
+							</div>
     </script>
 
 	<script src="mustache/mustache.min.js"></script>

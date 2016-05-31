@@ -192,7 +192,6 @@ $(document).ready(function () {
     
     WikidataModel.prototype = {
         	setCurrentWikidataId: function (wikidataId) {
-        		// this._currentViafId = viafId;
         		
         		// Déclenche une nouvelle requête auprès viaf.org.
         		this._getWikidataData(wikidataId);
@@ -216,9 +215,9 @@ $(document).ready(function () {
                     
                     console.log("_getWikidataData. Data found !");
                     var imageUrl = _self._analyzeWikidataResponse(response, wikidataId);
-                    // _self._analyzer.unsetData();
+
                     _self.application.state.setWikidataImageUrl(imageUrl);
-                   //  _self.application.state.setNormalizedIds(items);
+
                    // Envoie un événement signalant la fin d'une requête.
                    //  _self.application.mainMediator.publish(_self.application.mainMediator.VIAF_RESPONSE_RECEIVED);
                     
@@ -226,7 +225,7 @@ $(document).ready(function () {
                 });
                 
                 ajaxPromise.always(function () {
-                       console.log("The request for _getViafData is complete!");
+                       console.log("The request for _getWikidataData is complete!");
                 });
 
                 return promisedResults;
@@ -244,12 +243,12 @@ $(document).ready(function () {
             	var _self = this;
             	var result = "";
 
-            	var rawData = response;
-            	var node = null;
-            	if (rawData.hasOwnProperty("entities")) {
-            		node = rawData["entities"];
-            		if (node.hasOwnProperty(wikidataId)) {
-            			node = node[wikidataId];
+            	var node = response;
+            	// var node = null;
+//            	if (node.hasOwnProperty("entities")) {
+//            		node = node["entities"];
+//            		if (node.hasOwnProperty(wikidataId)) {
+//            			node = node[wikidataId];
             			if (node.hasOwnProperty("claims")) {
             				node = node["claims"];
             				if (node.hasOwnProperty("P18")) {
@@ -265,10 +264,14 @@ $(document).ready(function () {
             					}
             				}
             			}
-            		}
-            	}
+//            		}
+//            	}
             	
-            	result = "https://commons.wikimedia.org/wiki/File:" + result;
+            			
+            	//https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Bertrand_Russell_transparent_bg.png&width=300
+            	result = "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/" 
+            		 + result.replace(" ", "_")
+            		 + "&width=300";
             	console.log("_analyzeViafResponse. Résultat : " + result);
                 // this._resultingResultSet = this._data;
                 // this.normalizedIds = tempItems;
@@ -375,10 +378,105 @@ $(document).ready(function () {
             }(),
             
             mustacheItemTemplate: function () {
-                var template = $('#data-item-template').html();
+                var template = $('#pair-item-template').html();
                 Mustache.parse(template);
                 return template;
             } ()
+    		
+    }
+    
+    
+    function WikidataImageView(application) {
+        // Déclarations et initialisations des propriétés
+        this._root = null;
+        this.application = application;
+    }
+    
+    WikidataImageView.prototype = {
+    		
+    		initialize: function () {
+    			
+    			this._root = $("#wikidataImageContainer");
+    			
+    		},
+    		
+    		_clearItems: function () {
+    			this._root.empty();
+    		},
+    		
+    		update: function() {
+    			console.log("WikidataImageView is about to be updated !");
+    			var imageUrl = this.application.state.getWikidataImageUrl();
+    			
+    			// var renderMaterial = "";
+    			var itemRendered = Mustache.render(
+                            this.mustacheTemplate,
+                            {
+                            	"title": "My title",
+                            	"imageUrl": imageUrl,
+                            	"description": "My short description."
+                            }
+                );
+    			
+    			console.log();
+    			
+    			this._clearItems(itemRendered);
+    			$(itemRendered).appendTo(this._root);
+
+    		},
+    		
+            mustacheTemplate: function () {
+                var template = $('#image-card-template').html();
+                Mustache.parse(template);
+                return template;
+            }()
+    		
+    }
+    
+    function WikipediaLinksView(application) {
+        // Déclarations et initialisations des propriétés
+        this._root = null;
+        this.application = application;
+    }
+    
+    WikipediaLinksView.prototype = {
+    		
+    		initialize: function () {
+    			
+    			this._root = $("#wikipediaLinksContainer");
+    			
+    		},
+    		
+    		_clearItems: function () {
+    			this._root.empty();
+    		},
+    		
+    		update: function() {
+    			console.log("WikipediaLinksView is about to be updated !");
+    			var imageUrl = this.application.state.getWikipediaLinks();
+    			
+    			// var renderMaterial = "";
+    			var itemRendered = Mustache.render(
+                            this.mustacheTemplate,
+                            {
+                            	"title": "My title",
+                            	"imageUrl": imageUrl,
+                            	"description": "My short description."
+                            }
+                );
+    			
+    			console.log();
+    			
+    			this._clearItems(itemRendered);
+    			$(itemRendered).appendTo(this._root);
+
+    		},
+    		
+            mustacheTemplate: function () {
+                var template = $('#image-card-template').html();
+                Mustache.parse(template);
+                return template;
+            }()
     		
     }
     
@@ -401,6 +499,13 @@ $(document).ready(function () {
     		
     		setWikipediaLinks: function (wikipediaLinks) {
     			this.wikipediaLinks = wikipediaLinks;
+    			
+    			// Mise à jour de la liste de liens wikipedia
+    			this.application.wikipediaLinksView.update();
+    		},
+    		
+    		getWikipediaLinks: function () {
+    			return this.wikipediaLinks;
     		},
     		
     		setCurrentViafSearch: function (viafSearch) {
@@ -421,12 +526,16 @@ $(document).ready(function () {
     			this.wikidataImageUrl = url;
     			
     			// Mise à jour du WikidataImageView
-    			// this.application.wikidataModel.setCurrentWikidataId(this.wikidataId);
+    			this.application.wikidataImageView.update();
+    		},
+    		
+    		getWikidataImageUrl: function () {
+    			return this.wikidataImageUrl;
     		},
     		
     		getNormalizedIds: function () {
     			return this.normalizedIds;
-    		},
+    		}
     		
     }
     
@@ -437,6 +546,8 @@ $(document).ready(function () {
     	this.mainMediator = null;
     	this.viafFormView = null;
     	this.viafNormalizedIdsView = null;
+    	this.wikipediaLinksView = null;
+    	this.wikidataImageView = null;
     	this.state = {};
     }
     
@@ -452,6 +563,12 @@ $(document).ready(function () {
     			
     			this.viafNormalizedIdsView = new ViafNormalizedIdsView(this);
     			this.viafNormalizedIdsView.initialize();
+    			
+    			this.wikipediaLinksView = new WikipediaLinksView(this);
+    			this.wikipediaLinksView.initialize();
+    			
+    			this.wikidataImageView = new WikidataImageView(this);
+    			this.wikidataImageView.initialize();
     			
     			this.state = new BiographyApplicationState(this);
     		    

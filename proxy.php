@@ -13,9 +13,9 @@ switch ($datasource) {
 			$url = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/justlinks.json";
 			break;
 	case "wikidata":
-		// https://www.wikidata.org/w/api.php?action=wbgetclaims&props=&entity=Q937&property=P18
+			$url = "https://www.wikidata.org/w/api.php?action=wbgetclaims&props=&entity=" . $_GET["wikidata-id"] . "&property=P18&format=json";
 		
-			$url = "http://www.wikidata.org/wiki/Special:EntityData/" . $_GET["wikidata-id"] . ".json";
+			// $url = "http://www.wikidata.org/wiki/Special:EntityData/" . $_GET["wikidata-id"] . ".json";
 			break;
 }
 

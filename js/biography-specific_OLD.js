@@ -67,7 +67,7 @@ $(document).ready(function () {
      */
     DataItem.prototype = {
         mustacheTemplate: function () {
-            var template = $('#data-item-template').html();
+            var template = $('#pair-item-template').html();
             Mustache.parse(template);
             return template;
         }()
