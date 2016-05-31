@@ -124,7 +124,7 @@ $(document).ready(function () {
                 console.log("ViafFileModel._getViafData. Data found !");
                 var items = _self._analyzeViafResponse(response);
                 
-                // _self.application.state.setNormalizedIds(items);
+                _self.application.state.setOtherNames(items);
 
                 promisedResults.resolve();
             });
@@ -173,7 +173,6 @@ $(document).ready(function () {
         	}
         	
 
-        	
             return results;
     	}
     }
@@ -525,6 +524,49 @@ $(document).ready(function () {
     		
     }
     
+    function ViafOtherNamesView(application) {
+        // Déclarations et initialisations des propriétés
+        this._root = null;
+        this.application = application;
+    }
+    
+    ViafOtherNamesView.prototype = {
+    		
+    		initialize: function () {
+    			
+    			this._root = $("#viafOtherNamesContainer");
+    			
+    		},
+    		
+    		_clearItems: function () {
+    			this._root.empty();
+    		},
+    		
+    		update: function() {
+    			console.log("ViafOtherNamesView is about to be updated !");
+    			var otherNames = this.application.state.getOtherNames();
+    			
+    			var itemRendered = Mustache.render(
+                            this.mustacheTemplate,
+                            {"value": otherNames}
+                );
+    			
+    			// console.log();
+    			
+    			this._clearItems(itemRendered);
+    			$(itemRendered).appendTo(this._root);
+
+    		},
+    		
+            mustacheTemplate: function () {
+                var template = $('#other-names-template').html();
+                Mustache.parse(template);
+                return template;
+            }()
+    		
+    }
+    
+    
     function WikipediaLinksView(application) {
         // Déclarations et initialisations des propriétés
         this._root = null;
@@ -579,13 +621,18 @@ $(document).ready(function () {
     		
     }
     
+    
     function BiographyApplicationState(application) {
+    	
+    	this.application = application;
+    	
     	this.normalizedIds = [];
     	this.wikipediaLinks = [];
+    	this.otherNames = [];
     	this.currentViafSearch = "";
     	this.wikidataId = "";
     	this.wikidataImageUrl = "";
-    	this.application = application;
+
     }
     
     BiographyApplicationState.prototype = {
@@ -601,6 +648,17 @@ $(document).ready(function () {
     			
     			// Mise à jour de la liste de liens wikipedia
     			this.application.wikipediaLinksView.update();
+    		},
+    		
+    		setOtherNames: function (otherNames) {
+    			this.otherNames = otherNames;
+    			
+    			// Mise à jour de la liste de noms
+    			this.application.viafOtherNamesView.update();
+    		},
+    		
+    		getOtherNames: function () {
+    			return this.otherNames;
     		},
     		
     		getWikipediaLinks: function () {
@@ -649,6 +707,8 @@ $(document).ready(function () {
     	this.viafNormalizedIdsView = null;
     	this.wikipediaLinksView = null;
     	this.wikidataImageView = null;
+    	this.viafOtherNamesView = null;
+    	
     	this.state = {};
     }
     
@@ -671,6 +731,9 @@ $(document).ready(function () {
     			
     			this.wikidataImageView = new WikidataImageView(this);
     			this.wikidataImageView.initialize();
+    			
+    			this.viafOtherNamesView = new ViafOtherNamesView(this);
+    			this.viafOtherNamesView.initialize();
     			
     			this.state = new BiographyApplicationState(this);
     		    

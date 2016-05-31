@@ -84,6 +84,8 @@ body {
 				</form>
 
 				<div id="viafSearchResults" class="ui segment"></div>
+				
+				<div id="viafOtherNamesContainer" class="ui segment"></div>
 			</div>
 
 			<div class="eight wide column">
@@ -256,6 +258,31 @@ body {
   {{ /links }}
 </div>
 {{ /links.length }}
+</div>
+    </script>
+    
+        <script id="other-names-template" type="mustache/x-tmpl-mustache">
+<div class="ui segment">
+
+<h2 class="ui header">
+	<i class="student icon"></i>
+    <div class="content">
+        Other Names
+        <div class="sub header">En provenance de viaf.org</div>
+    </div>
+</h2>
+
+{{ #value.length }}
+<div class="ui middle aligned divided list">
+  {{ #value }}
+  <div class="item">
+    <div class="content">
+      <span class="header">{{ . }}</span>
+    </div>
+  </div>
+  {{ /value }}
+</div>
+{{ /value.length }}
 </div>
     </script>
     
