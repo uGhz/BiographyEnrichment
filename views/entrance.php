@@ -290,23 +290,54 @@ body {
 
 	<script src="mustache/mustache.min.js"></script>
 	<script src="js/biography-specific.js"></script>
+	<?php include "data/referentiel.php" ?>
 	<script>
-	
+
+	// searches across any array/object of searchable objects
+	var exampleContent = [
+	    {
+	      title: 'Horse',
+	      description: 'An Animal',
+	    },
+	    {
+	      title: 'Cow',
+	      description: 'Another Animal',
+	    }
+	  ]
+	;
+
+	$('.ui.search')
+	  .search({
+	    source : referenceData,
+	    searchFields   : [
+	      'nom',
+	      'viafId'
+	    ],
+	    fields: {
+	        results : 'results',
+	        title   : 'nom',
+	        url     : 'urlImage'
+	      },
+	    searchFullText: false
+	  })
+	;
+	/*
 	$('.ui.search')
 	  .search({
 	    apiSettings: {
-	      url: 'proxy-github.php?github-query={query}'
+	      url: 'http://127.0.0.1/biography-enrichment/proxy.php?source=viaf-autosuggest&query={query}'
 	    },
 	    fields: {
-	      results : 'items',
-	      title   : 'name',
-	      url     : 'url'
+	      results : 'result',
+	      title   : 'displayForm',
+	      url     : 'displayForm'
 	    },
 	    minCharacters : 3,
 	    debug: true,
 	    verbose: true
 	  })
 	;
+	*/
 	
 
 	/*

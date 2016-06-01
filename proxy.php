@@ -20,26 +20,37 @@ switch ($datasource) {
 		
 			// $url = "http://www.wikidata.org/wiki/Special:EntityData/" . $_GET["wikidata-id"] . ".json";
 			break;
+	case "viaf-autosuggest":
+				// echo "Github Lookup !";
+			$url = "http://viaf.org/viaf/AutoSuggest?query=" . $_GET["query"];
+			// echo "URL to fetch : " . $url;
+			break;
+	case "github":
+		// echo "Github Lookup !";
+		$url = "https://api.github.com/search/repositories?q=" . $_GET["github-query"];
+			break;
 }
 
 
 // echo $url;
 
-//$opts = array('http' => array(
-//		'method' => "GET",
-//		'header' => "User-Agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36\r\n"
-//		. "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n"
-//		. "Accept-Encoding:gzip, deflate, sdch\r\n"
-//		. "Accept-Language:fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4\r\n"
-//		. "Connection:keep-alive\r\n"
-//		. "Host:your.domain.com\r\n"
-//));
+$options = array('http' => array(
+		'method' => "GET",
+		'user_agent'=> $_SERVER['HTTP_USER_AGENT'],
+		'header' => "User-Agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36\r\n"
+		. "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n"
+		. "Accept-Encoding:gzip, deflate, sdch\r\n"
+		. "Accept-Language:fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4\r\n"
+		. "Connection:keep-alive\r\n"
+// 		. "Host:your.domain.com\r\n"
+));
 
 // $context = stream_context_create($opts);
 
+//$options  = array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT']));
+$context  = stream_context_create($options);
 
-// $responseString = file_get_contents($url, FALSE, $context); 
-$responseString = file_get_contents($url, FALSE); 
+$responseString = file_get_contents($url, FALSE, $context); 
 
 echo $responseString;
 ?>
