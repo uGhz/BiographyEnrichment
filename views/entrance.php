@@ -294,94 +294,37 @@ body {
 	<script>
 
 	// searches across any array/object of searchable objects
-	var exampleContent = [
-	    {
-	      title: 'Horse',
-	      description: 'An Animal',
-	    },
-	    {
-	      title: 'Cow',
-	      description: 'Another Animal',
-	    }
-	  ]
-	;
+// 	var exampleContent = [
+// 	    {
+// 	      title: 'Horse',
+// 	      description: 'An Animal',
+// 	    },
+// 	    {
+// 	      title: 'Cow',
+// 	      description: 'Another Animal',
+// 	    }
+// 	  ]
+// 	;
 
 	$('.ui.search')
 	  .search({
 	    source : referenceData,
 	    searchFields   : [
-	      'nom',
+//	      'nom',
+	      'title',
 	      'viafId'
 	    ],
-	    fields: {
-	        results : 'results',
-	        title   : 'nom',
-	        url     : 'urlImage'
-	      },
-	    searchFullText: false
-	  })
-	;
-	/*
-	$('.ui.search')
-	  .search({
-	    apiSettings: {
-	      url: 'http://127.0.0.1/biography-enrichment/proxy.php?source=viaf-autosuggest&query={query}'
-	    },
-	    fields: {
-	      results : 'result',
-	      title   : 'displayForm',
-	      url     : 'displayForm'
-	    },
-	    minCharacters : 3,
+// 	    fields: {
+// 	        results : 'results',
+// 	        title   		: 'title',
+// 	        description     : 'urlImage'
+// 	      },
+	      minCharacters : 3,
+	    searchFullText: false,
 	    debug: true,
 	    verbose: true
 	  })
 	;
-	*/
-	
-
-	/*
-	$('.ui.search')
-	  .search({
-	    type          : 'category',
-	    minCharacters : 3,
-	    apiSettings   : {
-	      onResponse: function(githubResponse) {
-	        var
-	          response = {
-	            results : {}
-	          }
-	        ;
-	        // translate GitHub API response to work with search
-	        $.each(githubResponse.items, function(index, item) {
-	          var
-	            language   = item.language || 'Unknown',
-	            maxResults = 8
-	          ;
-	          if(index >= maxResults) {
-	            return false;
-	          }
-	          // create new language category
-	          if(response.results[language] === undefined) {
-	            response.results[language] = {
-	              name    : language,
-	              results : []
-	            };
-	          }
-	          // add result to category
-	          response.results[language].results.push({
-	            title       : item.name,
-	            description : item.description,
-	            url         : item.html_url
-	          });
-	        });
-	        return response;
-	      },
-	      url: 'https://api.github.com/search/repositories?q={query}'
-	    }
-	  })
-	;
-	*/
 	</script>
 </body>
 
