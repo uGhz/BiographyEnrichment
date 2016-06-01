@@ -25,10 +25,10 @@ switch ($datasource) {
 			$url = "http://viaf.org/viaf/AutoSuggest?query=" . $_GET["query"];
 			// echo "URL to fetch : " . $url;
 			break;
-	case "github":
-		// echo "Github Lookup !";
-		$url = "https://api.github.com/search/repositories?q=" . $_GET["github-query"];
-			break;
+// 	case "github":
+// 		// echo "Github Lookup !";
+// 		$url = "https://api.github.com/search/repositories?q=" . $_GET["github-query"];
+// 			break;
 }
 
 

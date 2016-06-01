@@ -290,37 +290,51 @@ body {
 
 	<script src="mustache/mustache.min.js"></script>
 	<script src="js/biography-specific.js"></script>
-	<?php include "data/referentiel.php" ?>
+	<?php // include "data/referentiel.php" ?>
 	<script>
 
 	// searches across any array/object of searchable objects
-// 	var exampleContent = [
-// 	    {
-// 	      title: 'Horse',
-// 	      description: 'An Animal',
-// 	    },
-// 	    {
-// 	      title: 'Cow',
-// 	      description: 'Another Animal',
-// 	    }
-// 	  ]
-// 	;
+	var referenceData = [
+	    {
+		  id: 'TEST-ID1',
+	      title: 'Horse',
+	      description: 'An Animal',
+	      price: '$12',
+	      image           : 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Creative-Tail-Animal-fish.svg',
+		  //url: 'http://www.perdu.com/',
+	      action: {
+			actionText: 'ACTION',
+			actionUrl: 'ACTION_URL'
+		  }
+	    },
+	    {
+	      id: 'TEST-ID2',
+	      title: 'Cow',
+	      description: 'Another Animal',
+	      price: '$17',
+	      //url: 'http://www.perdu.com/',
+	      image           : 'https://upload.wikimedia.org/wikipedia/commons/9/96/Creative-Tail-Animal-star-fish.svg', 
+	    }
+	  ]
+	;
 
 	$('.ui.search')
 	  .search({
+		apiSettings: { url: '/proxy.php?id={id}'},
+		type          : 'standard',
 	    source : referenceData,
-	    searchFields   : [
-//	      'nom',
-	      'title',
-	      'viafId'
-	    ],
-// 	    fields: {
-// 	        results : 'results',
-// 	        title   		: 'title',
-// 	        description     : 'urlImage'
-// 	      },
-	      minCharacters : 3,
-	    searchFullText: false,
+// 	    searchFields   : [
+// 	      'nom',
+// 	      'title',
+// 	      'viafId'
+// 	    ],
+//	    fields: {
+//	        results : 'results'
+//	        title   		: 'nom'
+//	        description     : 'urlImage'
+//	      },
+	    minCharacters : 3,
+	    searchFullText: true,
 	    debug: true,
 	    verbose: true
 	  })
