@@ -156,9 +156,12 @@ $(document).ready(function () {
         	var resultObj = {};
         	var tempNode = null;
         	var temptext = "";
+        	var trailingComma = /,$/;
+        	
         	$.each($nodes, function (index, value) {
         		tempNode = $(this).find("subfield[code='a']");
         		temptext = tempNode.text();
+        		temptext = temptext.trim().replace(trailingComma, "");
         		// console.log("ns2 temp : " + temptext);
         		if ( !( temptext in resultObj ) ) {
         			resultObj[temptext] = 0;
