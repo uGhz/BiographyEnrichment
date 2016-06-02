@@ -170,7 +170,7 @@ $(document).ready(function () {
 
         	
         	for(var key in resultObj){
-            	console.log(key);
+            	// console.log(key);
         		results.push(key);
         	}
         	
@@ -245,7 +245,7 @@ $(document).ready(function () {
         	var rawData = response;
         	for (var key in rawData) {
         		  if (rawData.hasOwnProperty(key)) {
-        		    // console.log(key + " -> " + rawData[key]);
+        		    console.log(key + " -> " + rawData[key]);
         		    pairItem = new PairItem();
         		    
         		    if (key == "Wikipedia") {
@@ -253,6 +253,12 @@ $(document).ready(function () {
         		    	_self.application.state.setWikipediaLinks(rawData[key]);
         		    } else {
         		    
+	                    if (key == "WKP") {
+
+	                    	_self.application.state.setCurrentWikidataId(rawData[key]);
+	                    	console.log("CurrentWikidataId updated !");
+	                    }
+        		    	
 	                    if (ReferenceData.ViafAuthorities[key]) {
 	                    	pairItem.label = ReferenceData.ViafAuthorities[key];
 	                    } else {
@@ -260,10 +266,6 @@ $(document).ready(function () {
 	                    }
 	                    
 	                    pairItem.value = rawData[key];
-	                    
-	                    if (key == "WKP") {
-	                    	_self.application.state.setCurrentWikidataId(rawData[key]);
-	                    }
 	                    
 	                    tempItems.push(pairItem);
         		    }
