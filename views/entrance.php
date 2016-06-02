@@ -117,22 +117,25 @@ body {
 				<div class="ui grid">
 
 					<div class="two column row">
-
-						<div class="column" id="wikidataImageContainer">
-
-							<!-- Placeholder for Wikidata Image -->
-
-						</div>
-						<div class="column" id="biusanteImageContainer">
-						
-							<!-- Placeholder for Biusante Image -->
-							
-						</div>
-
-						<div class="column" id="wikipediaLinksContainer">
+						<div class="column">
+							<div id="wikidataImageContainer">
+	
+								<!-- Placeholder for Wikidata Image -->
+	
+							</div>
+							<div class="ui basic segment"></div>
+							<div id="wikipediaLinksContainer">
 
 							<!-- Placeholder for Wikipedia Links -->
 
+							</div>
+						</div>
+						<div class="column">
+							<div id="biusanteImageContainer">
+								
+								<!-- Placeholder for Biusante Image -->
+								
+							</div>
 						</div>
 					</div>
 				</div>
