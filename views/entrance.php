@@ -11,7 +11,7 @@
 <title>Biography Enrichment - BIU Santé</title>
 
 <link rel="stylesheet" type="text/css"
-	href="Semantic-UI-CSS-master/dist/semantic.min.css">
+	href="semantic/dist/semantic.min.css">
 
 <style type="text/css">
 body {
@@ -37,7 +37,7 @@ body {
 </style>
 
 <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-<script src="Semantic-UI-CSS-master/dist/semantic.min.js"></script>
+<script src="semantic/dist/semantic.min.js"></script>
 </head>
 <body>
 
