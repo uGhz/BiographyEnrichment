@@ -1,0 +1,22 @@
+{
+  "name": "biography-enrichment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "js/biography-specific.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uGhz/BiographyEnrichment.git"
+  },
+  "author": "uGhz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uGhz/BiographyEnrichment/issues"
+  },
+  "homepage": "https://github.com/uGhz/BiographyEnrichment#readme"
+}
