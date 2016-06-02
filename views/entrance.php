@@ -109,7 +109,7 @@ body {
 
 				<div id="viafSearchResults" class="ui segment"></div>
 
-				<div id="viafOtherNamesContainer" class="ui segment"></div>
+				<div id="viafOtherNamesContainer"></div>
 			</div>
 
 			<div class="eight wide column">
@@ -124,28 +124,9 @@ body {
 
 						</div>
 						<div class="column" id="biusanteImageContainer">
-							<div class="ui card">
-								<div class="content">
-									<img class="left floated mini ui image"
-										src="http://www.biusante.parisdescartes.fr/ressources/images/logo-biusante-officiel.png">
-									<div class="header">Images et portraits</div>
-								</div>
-								<div class="image">
-									<img
-										src="https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Augustin_Grisolle.jpg&amp;width=300">
-								</div>
-								<div class="content">
-									<a class="header">My title</a>
-									<div class="meta">
-										<span class="date">Joined in 2013</span>
-									</div>
-									<div class="description">My short description.</div>
-								</div>
-								<div class="extra content">
-									<a> <i class="user icon"></i> 22 Friends
-									</a>
-								</div>
-							</div>
+						
+							<!-- Placeholder for Biusante Image -->
+							
 						</div>
 
 						<div class="column" id="wikipediaLinksContainer">
