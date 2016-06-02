@@ -99,7 +99,7 @@ body {
 							</div>
 						</h2>
 						<div class="ui fluid search">
-							<div class="ui icon input">
+							<div class="ui fluid icon input">
 								<input class="prompt" type="text"
 									placeholder="Common passwords..."> <i class="search icon"></i>
 							</div>
@@ -290,10 +290,11 @@ body {
 
 	<script src="mustache/mustache.min.js"></script>
 	<script src="js/biography-specific.js"></script>
-	<?php // include "data/referentiel.php" ?>
+	<?php include "data/referentiel.php" ?>
 	<script>
 
 	// searches across any array/object of searchable objects
+	/*
 	var referenceData = [
 	    {
 		  id: 'TEST-ID1',
@@ -317,6 +318,7 @@ body {
 	    }
 	  ]
 	;
+	*/
 
 	$('.ui.search')
 	  .search({
@@ -336,7 +338,11 @@ body {
 	    minCharacters : 3,
 	    searchFullText: true,
 	    debug: true,
-	    verbose: true
+	    verbose: true,
+	    onSelect: function (result, response) {
+			console.log(".ui.search. Item selected !");
+			console.log(result);
+	    }
 	  })
 	;
 	</script>
