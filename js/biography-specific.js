@@ -751,5 +751,31 @@ $(document).ready(function () {
     var ba = new BiographyApplication();
     ba.initialize();
     
-    
+	$('.ui.search')
+	  .search({
+		apiSettings: { url: '/proxy.php?id={id}'},
+		type          : 'standard',
+	    source : referenceData,
+//	    searchFields   : [
+//	      'nom',
+//	      'title',
+//	      'viafId'
+//	    ],
+//	    fields: {
+//	        results : 'results'
+//	        title   		: 'nom'
+//	        description     : 'urlImage'
+//	      },
+	    minCharacters : 3,
+	    searchFullText: true,
+	    debug: true,
+	    verbose: true,
+	    onSelect: function (result, response) {
+			console.log(".ui.search. Item selected !");
+			console.log(result);
+			console.log("VIAF ID to set : " + result.viafId);
+			ba.state.setCurrentViafSearch(result.viafId);
+	    }
+	  })
+	;
 });

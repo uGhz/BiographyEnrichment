@@ -287,10 +287,10 @@ body {
     </script>
     
     
-
+	<?php include "data/referentiel.php" ?>
 	<script src="mustache/mustache.min.js"></script>
 	<script src="js/biography-specific.js"></script>
-	<?php include "data/referentiel.php" ?>
+
 	<script>
 
 	// searches across any array/object of searchable objects
@@ -320,31 +320,6 @@ body {
 	;
 	*/
 
-	$('.ui.search')
-	  .search({
-		apiSettings: { url: '/proxy.php?id={id}'},
-		type          : 'standard',
-	    source : referenceData,
-// 	    searchFields   : [
-// 	      'nom',
-// 	      'title',
-// 	      'viafId'
-// 	    ],
-//	    fields: {
-//	        results : 'results'
-//	        title   		: 'nom'
-//	        description     : 'urlImage'
-//	      },
-	    minCharacters : 3,
-	    searchFullText: true,
-	    debug: true,
-	    verbose: true,
-	    onSelect: function (result, response) {
-			console.log(".ui.search. Item selected !");
-			console.log(result);
-	    }
-	  })
-	;
 	</script>
 </body>
 
