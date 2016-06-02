@@ -842,7 +842,7 @@ $(document).ready(function () {
 			console.log(result);
 			console.log("VIAF ID to set : " + result.viafId);
 			ba.state.setCurrentViafSearch(result.viafId);
-			ba.state.setBiusanteImageUrl(result.image);
+			ba.state.setBiusanteImageUrl(result.image.replace("/pt/", "/gd/"));
 	    }
 	  })
 	;
