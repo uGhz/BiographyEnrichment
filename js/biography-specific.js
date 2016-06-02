@@ -1,6 +1,5 @@
-/*jslint browser: true*/
 /*global  $, Mustache */
-// Using the module pattern for a jQuery feature
+/* jshint -W100 */
 
 $(document).ready(function () {
     "use strict";
@@ -87,7 +86,7 @@ $(document).ready(function () {
     				}
     			}
     		}
-    }
+    };
     
     ////
     
@@ -178,7 +177,7 @@ $(document).ready(function () {
 
             return results;
     	}
-    }
+    };
     
     
     ////
@@ -278,7 +277,7 @@ $(document).ready(function () {
             // this.normalizedIds = tempItems;
             return tempItems;
     	}
-    }
+    };
     
     function WikidataModel(application) {
     	this.application = application;
@@ -344,15 +343,15 @@ $(document).ready(function () {
 //            		if (node.hasOwnProperty(wikidataId)) {
 //            			node = node[wikidataId];
             			if (node.hasOwnProperty("claims")) {
-            				node = node["claims"];
+            				node = node.claims;
             				if (node.hasOwnProperty("P18")) {
-            					node = node["P18"][0];
+            					node = node.P18[0];
             					if (node.hasOwnProperty("mainsnak")) {
-            						node = node["mainsnak"];
+            						node = node.mainsnak;
                 					if (node.hasOwnProperty("datavalue")) {
-                						node = node["datavalue"];
+                						node = node.datavalue;
                     					if (node.hasOwnProperty("value")) {
-                    						result = node["value"];
+                    						result = node.value;
                     					}
                 					}
             					}
@@ -363,15 +362,15 @@ $(document).ready(function () {
             	
             			
             	//https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Bertrand_Russell_transparent_bg.png&width=300
-            	result = "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/" 
-            		 + result.replace(" ", "_")
-            		 + "&width=300";
+            	result = "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/" + 
+            					result.replace(" ", "_") +
+            					"&width=300";
             	console.log("_analyzeViafResponse. Résultat : " + result);
                 // this._resultingResultSet = this._data;
                 // this.normalizedIds = tempItems;
                 return result;
         	}
-    }
+    };
     
     
     function ViafFormView(application) {
@@ -404,7 +403,7 @@ $(document).ready(function () {
     		getCurrentSearch: function() {
     			return this._currentSearch;
     		}
-    }
+    };
     
     function ViafNormalizedIdsView(application) {
         // Déclarations et initialisations des propriétés
@@ -477,7 +476,7 @@ $(document).ready(function () {
                 return template;
             } ()
     		
-    }
+    };
     
     
     function WikidataImageView(application) {
@@ -525,7 +524,7 @@ $(document).ready(function () {
                 return template;
             }()
     		
-    }
+    };
     
     function ViafOtherNamesView(application) {
         // Déclarations et initialisations des propriétés
@@ -567,7 +566,7 @@ $(document).ready(function () {
                 return template;
             }()
     		
-    }
+    };
     
     
     function WikipediaLinksView(application) {
@@ -622,7 +621,7 @@ $(document).ready(function () {
                 return template;
             }()
     		
-    }
+    };
     
     
     function BiographyApplicationState(application) {
@@ -698,7 +697,7 @@ $(document).ready(function () {
     			return this.normalizedIds;
     		}
     		
-    }
+    };
     
 
     function BiographyApplication() {
@@ -745,7 +744,7 @@ $(document).ready(function () {
     		onViafRequestedIdChanged: function () {
     			this.viafLinksModel.setCurrentViafId(this.viafFormView.getCurrentSearch());
     		}
-    }
+    };
     
     var ba = new BiographyApplication();
     ba.initialize();
