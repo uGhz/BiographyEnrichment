@@ -507,6 +507,57 @@ $(document).ready(function () {
     			var itemRendered = Mustache.render(
                             this.mustacheTemplate,
                             {
+                            	"cardTitle": "Wikidata",
+                            	"cardLogoUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Wikidata-logo-without-paddings.svg",
+                            	"title": "My title",
+                            	"imageUrl": imageUrl,
+                            	"description": "My short description."
+                            }
+                );
+    			
+    			console.log();
+    			
+    			this._clearItems(itemRendered);
+    			$(itemRendered).appendTo(this._root);
+
+    		},
+    		
+            mustacheTemplate: function () {
+                var template = $('#image-card-template').html();
+                Mustache.parse(template);
+                return template;
+            }()
+    		
+    };
+    
+    function BiusanteImageView(application) {
+        // Déclarations et initialisations des propriétés
+        this._root = null;
+        this.application = application;
+    }
+    
+    BiusanteImageView.prototype = {
+    		
+    		initialize: function () {
+    			
+    			this._root = $("#biusanteImageContainer");
+    			
+    		},
+    		
+    		_clearItems: function () {
+    			this._root.empty();
+    		},
+    		
+    		update: function() {
+    			console.log("BiusanteImageView is about to be updated !");
+    			var imageUrl = this.application.state.getBiusanteImageUrl();
+    			
+    			// var renderMaterial = "";
+    			var itemRendered = Mustache.render(
+                            this.mustacheTemplate,
+                            {
+                            	"cardTitle": "Images et portraits",
+                            	"cardLogoUrl": "http://www.biusante.parisdescartes.fr/ressources/images/logo-biusante-officiel.png",
                             	"title": "My title",
                             	"imageUrl": imageUrl,
                             	"description": "My short description."
@@ -636,6 +687,7 @@ $(document).ready(function () {
     	this.currentViafSearch = "";
     	this.wikidataId = "";
     	this.wikidataImageUrl = "";
+    	this.biusanteImageUrl = "";
 
     }
     
@@ -695,6 +747,17 @@ $(document).ready(function () {
     			return this.wikidataImageUrl;
     		},
     		
+    		setBiusanteImageUrl: function (url) {
+    			this.biusanteImageUrl = url;
+    			
+    			// Mise à jour du BiusanteImageView
+    			this.application.biusanteImageView.update();
+    		},
+    		
+    		getBiusanteImageUrl: function () {
+    			return this.biusanteImageUrl;
+    		},
+    		
     		getNormalizedIds: function () {
     			return this.normalizedIds;
     		}
@@ -711,6 +774,7 @@ $(document).ready(function () {
     	this.viafNormalizedIdsView = null;
     	this.wikipediaLinksView = null;
     	this.wikidataImageView = null;
+    	this.biusanteImageView = null;
     	this.viafOtherNamesView = null;
     	
     	this.state = {};
@@ -735,6 +799,9 @@ $(document).ready(function () {
     			
     			this.wikidataImageView = new WikidataImageView(this);
     			this.wikidataImageView.initialize();
+    			
+    			this.biusanteImageView = new BiusanteImageView(this);
+    			this.biusanteImageView.initialize();
     			
     			this.viafOtherNamesView = new ViafOtherNamesView(this);
     			this.viafOtherNamesView.initialize();
@@ -775,6 +842,7 @@ $(document).ready(function () {
 			console.log(result);
 			console.log("VIAF ID to set : " + result.viafId);
 			ba.state.setCurrentViafSearch(result.viafId);
+			ba.state.setBiusanteImageUrl(result.image);
 	    }
 	  })
 	;

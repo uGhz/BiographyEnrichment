@@ -75,6 +75,30 @@ body {
 		<div class="ui grid">
 
 			<div class="eight wide column">
+				<div class="row">
+					<div class="ui segment">
+						<h2 class="ui header">
+							<img class="ui image"
+								src="http://www.biusante.parisdescartes.fr/ressources/images/logo-biusante-officiel.png">
+							<div class="content">
+								Biographies
+								<div class="sub header">Powered by La BIU Santé</div>
+							</div>
+						</h2>
+						<div class="ui fluid search">
+							<div class="ui fluid icon input">
+								<input class="prompt" type="text" placeholder="Chercher..."> <i
+									class="search icon"></i>
+							</div>
+							<div class="results"></div>
+						</div>
+					</div>
+				</div>
+				  <div class="ui horizontal divider">
+				    Ou
+				  </div>
+
+
 				<form id="viafSearchForm" class="ui form segment">
 					<div class="field">
 						<label>Saisissez un identifiant VIAF&nbsp;:</label> <input
@@ -84,41 +108,49 @@ body {
 				</form>
 
 				<div id="viafSearchResults" class="ui segment"></div>
-				
+
 				<div id="viafOtherNamesContainer" class="ui segment"></div>
 			</div>
 
 			<div class="eight wide column">
-				<div class="row">
-					<div class="ui segment">
-						<h2 class="ui header">
-							<i class="search icon"></i>
-							<div class="content">
-								VIAF Autosuggest
-								<div class="sub header">Wise helper</div>
-							</div>
-						</h2>
-						<div class="ui fluid search">
-							<div class="ui fluid icon input">
-								<input class="prompt" type="text"
-									placeholder="Common passwords..."> <i class="search icon"></i>
-							</div>
-							<div class="results"></div>
-						</div>
-					</div>
-				</div>
-				<div class="ui divider"></div>
+
 				<div class="ui grid">
 
 					<div class="two column row">
-						<div class="column" id="wikipediaLinksContainer">
 
-							<!-- Placeholder for Wikipedia Links -->
-							
-						</div>
 						<div class="column" id="wikidataImageContainer">
 
 							<!-- Placeholder for Wikidata Image -->
+
+						</div>
+						<div class="column" id="biusanteImageContainer">
+							<div class="ui card">
+								<div class="content">
+									<img class="left floated mini ui image"
+										src="http://www.biusante.parisdescartes.fr/ressources/images/logo-biusante-officiel.png">
+									<div class="header">Images et portraits</div>
+								</div>
+								<div class="image">
+									<img
+										src="https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Augustin_Grisolle.jpg&amp;width=300">
+								</div>
+								<div class="content">
+									<a class="header">My title</a>
+									<div class="meta">
+										<span class="date">Joined in 2013</span>
+									</div>
+									<div class="description">My short description.</div>
+								</div>
+								<div class="extra content">
+									<a> <i class="user icon"></i> 22 Friends
+									</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="column" id="wikipediaLinksContainer">
+
+							<!-- Placeholder for Wikipedia Links -->
 
 						</div>
 					</div>
@@ -214,8 +246,8 @@ body {
 	<script id="image-card-template" type="mustache/x-tmpl-mustache">
 							<div class="ui card">
 								<div class="content">
-									<img class="left floated mini ui image" src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Wikidata-logo-without-paddings.svg">
-									<div class="header">Wikidata</div>
+									<img class="left floated mini ui image" src="{{ cardLogoUrl }}">
+									<div class="header">{{ cardTitle }}</div>
 								</div>
 								<div class="image">
 									<img src="{{ imageUrl }}">
@@ -233,9 +265,9 @@ body {
 								</div>
 							</div>
     </script>
-    
-    
-    <script id="wikipedia-links-template" type="mustache/x-tmpl-mustache">
+
+
+	<script id="wikipedia-links-template" type="mustache/x-tmpl-mustache">
 <div class="ui segment">
 
 <h2 class="ui header">
@@ -260,8 +292,8 @@ body {
 {{ /links.length }}
 </div>
     </script>
-    
-        <script id="other-names-template" type="mustache/x-tmpl-mustache">
+
+	<script id="other-names-template" type="mustache/x-tmpl-mustache">
 <div class="ui segment">
 
 <h2 class="ui header">
@@ -287,40 +319,9 @@ body {
     </script>
     
     
-	<?php include "data/referentiel.php" ?>
+	<?php include "data/referentiel.php"?>
 	<script src="mustache/mustache.min.js"></script>
 	<script src="js/biography-specific.js"></script>
-
-	<script>
-
-	// searches across any array/object of searchable objects
-	/*
-	var referenceData = [
-	    {
-		  id: 'TEST-ID1',
-	      title: 'Horse',
-	      description: 'An Animal',
-	      price: '$12',
-	      image           : 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Creative-Tail-Animal-fish.svg',
-		  //url: 'http://www.perdu.com/',
-	      action: {
-			actionText: 'ACTION',
-			actionUrl: 'ACTION_URL'
-		  }
-	    },
-	    {
-	      id: 'TEST-ID2',
-	      title: 'Cow',
-	      description: 'Another Animal',
-	      price: '$17',
-	      //url: 'http://www.perdu.com/',
-	      image           : 'https://upload.wikimedia.org/wikipedia/commons/9/96/Creative-Tail-Animal-star-fish.svg', 
-	    }
-	  ]
-	;
-	*/
-
-	</script>
 </body>
 
 </html>
