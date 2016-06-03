@@ -1,0 +1,4 @@
+### RewriteBase myfolder
+RewriteEngine On
+Options FollowSymLinks
+RewriteRule "^api/(.+)" "/biography-enrichment/api.php?request=$1" [QSA]

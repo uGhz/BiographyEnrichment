@@ -834,7 +834,7 @@ $(document).ready(function () {
 //	        description     : 'urlImage'
 //	      },
 	    minCharacters : 3,
-	    searchFullText: true,
+	    searchFullText: false,
 	    debug: true,
 	    verbose: true,
 	    onSelect: function (result, response) {
