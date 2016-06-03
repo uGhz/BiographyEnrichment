@@ -35,25 +35,25 @@ class BIUSanteBiographiesDAO {
 	 
 	public function getBiographieByRefbiogr($refbiogr) {
 
-		echo "getBIUSanteBiographyByRefbiogr";
+// 		echo "getBIUSanteBiographyByRefbiogr";
 
 		$biographie = new BIUSanteBiographie();
 
 		$fm = $this->getFileMakerInstance();
-		echo "FileMakerInstance created : " . (($fm) ? 'true' : 'false');
+// 		echo "FileMakerInstance created : " . (($fm) ? 'true' : 'false');
 		
 		 $findCommand =& $fm->newFindCommand(self::FM_LAYOUT_WEB_BIOGRAPHIES);
-		 echo "findCommand created : " . (($findCommand) ? 'true' : 'false');
+// 		 echo "findCommand created : " . (($findCommand) ? 'true' : 'false');
 
 		 // Prise en compte des critères de recherche par la requête FileMaker
 		 $findCommand->addFindCriterion(self::FM_FIELD_NAME_REFBIOGR, $refbiogr);
 
 		 $results = $findCommand->execute();
-		 echo "results created : " . (($results) ? 'true' : 'false');
+// 		 echo "results created : " . (($results) ? 'true' : 'false');
 		 
 		 // var_dump($results);
 		 if ($fm::isError($results)) {
-		 	echo "<br>ERROR !!!";
+// 		 	echo "<br>ERROR !!!";
 			throw new \Exception('Erreur FileMaker : ' . $results->getMessage());
 			}
 
