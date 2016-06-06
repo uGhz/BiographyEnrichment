@@ -88,6 +88,62 @@ $(document).ready(function () {
     		}
     };
     
+    function BiusanteBiographiesModel(application) {
+    	
+    	// this.normalizedIds = [];
+    	// this.wikipediaLinks = [];
+    	// this._currentViafId = "";
+    	this.application = application;
+    }
+    
+    BiusanteBiographiesModel.prototype = {
+    	
+    	setCurrentRefbiogr: function (refbiogr) {
+    		
+    		// Déclenche une nouvelle requête auprès de la Biusanté.
+    		this._getBiusanteData(refbiogr);
+
+    	},
+    	
+    	_getBiusanteData: function(refbiogr) {
+            var _self = this;
+            var promisedResults = $.Deferred();
+            var queryUrl = "proxy.php?source=biusante-biographies&refbiogr=" + refbiogr;
+            
+            console.log("About to request : " + queryUrl);
+            var ajaxPromise = $.ajax({
+                url: queryUrl,
+                dataType: "json"
+            });
+            
+            ajaxPromise.done(function (response) {
+                
+                console.log("BiusanteBiographiesModel._getBiusanteData. Data found !");
+                var biographie = _self._analyzeBiusanteResponse(response);
+                
+                _self.application.state.setBiusanteBiographie(biographie);
+
+                promisedResults.resolve();
+            });
+            
+            ajaxPromise.always(function () {
+                   console.log("BiusanteBiographiesModel. The request for _getBiusanteData is complete!");
+            });
+
+            return promisedResults;
+    	},
+    	
+    	_analyzeBiusanteResponse: function (response) {
+        	console.log("BiusanteBiographiesModel._analyzeBiusanteResponse. Construction des résultats...");
+        	console.log(response);
+        	
+        	var _self = this;
+        	var result = response;
+
+            return result;
+    	}
+    };
+    
     ////
     
     function ViafFileModel(application) {
@@ -502,7 +558,7 @@ $(document).ready(function () {
     		update: function() {
     			console.log("WikidataImageView is about to be updated !");
     			var imageUrl = this.application.state.getWikidataImageUrl();
-    			
+    			var sousTitre = "Joined in 2013";
     			// var renderMaterial = "";
     			var itemRendered = Mustache.render(
                             this.mustacheTemplate,
@@ -510,6 +566,7 @@ $(document).ready(function () {
                             	"cardTitle": "Wikidata",
                             	"cardLogoUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Wikidata-logo-without-paddings.svg",
                             	"title": "My title",
+                            	"subtitle": sousTitre,
                             	"imageUrl": imageUrl,
                             	"description": "My short description."
                             }
@@ -551,7 +608,7 @@ $(document).ready(function () {
     		update: function() {
     			console.log("BiusanteImageView is about to be updated !");
     			var imageUrl = this.application.state.getBiusanteImageUrl();
-    			
+    			var sousTitre = "Joined in 2013";
     			// var renderMaterial = "";
     			var itemRendered = Mustache.render(
                             this.mustacheTemplate,
@@ -559,8 +616,79 @@ $(document).ready(function () {
                             	"cardTitle": "Images et portraits",
                             	"cardLogoUrl": "http://www.biusante.parisdescartes.fr/ressources/images/logo-biusante-officiel.png",
                             	"title": "My title",
+                            	"subtitle": sousTitre,
                             	"imageUrl": imageUrl,
                             	"description": "My short description."
+                            }
+                );
+    			
+    			console.log();
+    			
+    			this._clearItems(itemRendered);
+    			$(itemRendered).appendTo(this._root);
+
+    		},
+    		
+            mustacheTemplate: function () {
+                var template = $('#image-card-template').html();
+                Mustache.parse(template);
+                return template;
+            }()
+    		
+    };
+    
+    function BiusanteBiographieView(application) {
+        // Déclarations et initialisations des propriétés
+        this._root = null;
+        this.application = application;
+    }
+    
+    BiusanteBiographieView.prototype = {
+    		
+    		initialize: function () {
+    			
+    			this._root = $("#biusanteBiographieContainer");
+    			
+    		},
+    		
+    		_clearItems: function () {
+    			this._root.empty();
+    		},
+    		
+    		update: function() {
+    			console.log("BiusanteBiographieView is about to be updated !");
+    			var biographie = this.application.state.getBiusanteBiographie();
+    			
+    			var imageUrl = "images/image-exemple.png";
+    			if (biographie.referenceBanqueImages) {
+    				imageUrl = "http://www.biusante.parisdescartes.fr/images/banque/gd/" + biographie.referenceBanqueImages + ".jpg";
+    			}
+    			
+    			var sousTitre = "";
+    			if (biographie.dateNaissance) {
+    				sousTitre = "Naissance : " + biographie.dateNaissance;
+    				if (biographie.lieuNaissance) {
+    					sousTitre += " (" + biographie.lieuNaissance + ")";
+    				}
+    				sousTitre += "  ";
+    			}
+    			
+    			if (biographie.dateDeces) {
+    				sousTitre += "Décès : " + biographie.dateDeces;
+    				if (biographie.lieuDeces) {
+    					sousTitre += " (" + biographie.lieuDeces + ")";
+    				}
+    			}
+    			// var renderMaterial = "";
+    			var itemRendered = Mustache.render(
+                            this.mustacheTemplate,
+                            {
+                            	"cardTitle": "Biographies",
+                            	"cardLogoUrl": "http://www.biusante.parisdescartes.fr/ressources/images/logo-biusante-officiel.png",
+                            	"title": biographie.nomComplet,
+                            	"subtitle": sousTitre,
+                            	"imageUrl": imageUrl,
+                            	"description": biographie.commentaire
                             }
                 );
     			
@@ -685,9 +813,11 @@ $(document).ready(function () {
     	this.wikipediaLinks = [];
     	this.otherNames = [];
     	this.currentViafSearch = "";
+    	this.currentRefbiogr = "";
     	this.wikidataId = "";
     	this.wikidataImageUrl = "";
     	this.biusanteImageUrl = "";
+    	this.biusanteBiographie = {};
 
     }
     
@@ -736,6 +866,24 @@ $(document).ready(function () {
     			this.application.wikidataModel.setCurrentWikidataId(this.wikidataId);
     		},
     		
+    		setCurrentRefbiogr: function (refbiogr) {
+    			this.currentRefbiogr = refbiogr;
+    			
+    			// Mise à jour du biusanteBiographiesModel
+    			this.application.biusanteBiographiesModel.setCurrentRefbiogr(this.currentRefbiogr);
+    		},
+    		
+    		setBiusanteBiographie: function (biographie) {
+    			this.biusanteBiographie = biographie;
+    			
+    			// Mise à jour du biusanteBiographieView
+    			this.application.biusanteBiographieView.update();
+    		},
+    		
+    		getBiusanteBiographie: function () {
+    			return this.biusanteBiographie;
+    		},
+    		
     		setWikidataImageUrl: function (url) {
     			this.wikidataImageUrl = url;
     			
@@ -766,16 +914,21 @@ $(document).ready(function () {
     
 
     function BiographyApplication() {
+    	
+    	this.biusanteBiographiesModel = null;
     	this.viafLinksModel = null;
     	this.viafFileModel = null;
     	this.wikidataModel = null;
+    	
     	this.mainMediator = null;
+    	
     	this.viafFormView = null;
     	this.viafNormalizedIdsView = null;
     	this.wikipediaLinksView = null;
     	this.wikidataImageView = null;
     	this.biusanteImageView = null;
     	this.viafOtherNamesView = null;
+    	this.biusanteBiographieView = null;
     	
     	this.state = {};
     }
@@ -783,7 +936,8 @@ $(document).ready(function () {
     BiographyApplication.prototype = {
     		initialize: function () {
     			this.mainMediator = new Mediator();
-    		    
+    			
+    		    this.biusanteBiographiesModel = new BiusanteBiographiesModel(this);
     		    this.viafLinksModel = new ViafLinksModel(this);
     		    this.viafFileModel = new ViafFileModel(this);
     		    this.wikidataModel = new WikidataModel(this);
@@ -799,6 +953,9 @@ $(document).ready(function () {
     			
     			this.wikidataImageView = new WikidataImageView(this);
     			this.wikidataImageView.initialize();
+    			
+    			this.biusanteBiographieView = new BiusanteBiographieView(this);
+    			this.biusanteBiographieView.initialize();
     			
     			this.biusanteImageView = new BiusanteImageView(this);
     			this.biusanteImageView.initialize();
@@ -842,6 +999,7 @@ $(document).ready(function () {
 			console.log(result);
 			console.log("VIAF ID to set : " + result.viafId);
 			ba.state.setCurrentViafSearch(result.viafId);
+			ba.state.setCurrentRefbiogr(result.refbiogr);
 			ba.state.setBiusanteImageUrl(result.image.replace("/pt/", "/gd/"));
 	    }
 	  })

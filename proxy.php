@@ -25,6 +25,9 @@ switch ($datasource) {
 			$url = "http://viaf.org/viaf/AutoSuggest?query=" . $_GET["query"];
 			// echo "URL to fetch : " . $url;
 			break;
+	case "biusante-biographies":
+		$url = "http://172.22.100.140/api-draft/public/biographies/" . $_GET["refbiogr"];
+		break;
 // 	case "github":
 // 		// echo "Github Lookup !";
 // 		$url = "https://api.github.com/search/repositories?q=" . $_GET["github-query"];

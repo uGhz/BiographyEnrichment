@@ -131,6 +131,13 @@ body {
 							</div>
 						</div>
 						<div class="column">
+						
+							<div id="biusanteBiographieContainer">
+								
+								<!-- Placeholder for Biusante Biographie -->
+								
+							</div>
+							<div class="ui basic segment"></div>
 							<div id="biusanteImageContainer">
 								
 								<!-- Placeholder for Biusante Image -->
@@ -239,7 +246,7 @@ body {
 								<div class="content">
 									<a class="header">{{ title }}</a>
 									<div class="meta">
-										<span class="date">Joined in 2013</span>
+										<span class="date">{{ subtitle }}</span>
 									</div>
 									<div class="description">{{ description }}</div>
 								</div>
