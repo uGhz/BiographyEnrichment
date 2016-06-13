@@ -54,5 +54,6 @@ $context = stream_context_create($options);
 
 $responseString = file_get_contents($url, FALSE, $context); 
 
+header('Access-Control-Allow-Origin: *');
 echo $responseString;
 ?>
