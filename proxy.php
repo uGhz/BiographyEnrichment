@@ -20,6 +20,11 @@ switch ($datasource) {
 		
 			// $url = "http://www.wikidata.org/wiki/Special:EntityData/" . $_GET["wikidata-id"] . ".json";
 			break;
+	case "wikidata-entity":
+				$url = "https://www.wikidata.org/w/api.php?action=wbgetclaims&props=&entity=" . $_GET["wikidata-id"] . "&format=json";
+			
+				// $url = "http://www.wikidata.org/wiki/Special:EntityData/" . $_GET["wikidata-id"] . ".json";
+				break;
 	case "viaf-autosuggest":
 				// echo "Github Lookup !";
 			$url = "http://viaf.org/viaf/AutoSuggest?query=" . $_GET["query"];
