@@ -21,7 +21,8 @@ switch ($datasource) {
 			// $url = "http://www.wikidata.org/wiki/Special:EntityData/" . $_GET["wikidata-id"] . ".json";
 			break;
 	case "wikidata-entity":
-				$url = "https://www.wikidata.org/w/api.php?action=wbgetclaims&props=&entity=" . $_GET["wikidata-id"] . "&format=json";
+				$url = "https://www.wikidata.org/w/api.php?action=wbgetentities&languages=fr&languagefallback=&ids=" . $_GET["wikidata-id"] . "&format=json";
+				// https://www.wikidata.org/w/api.php?action=wbgetentities&languages=fr&languagefallback=&ids=Q42&format=json
 			
 				// $url = "http://www.wikidata.org/wiki/Special:EntityData/" . $_GET["wikidata-id"] . ".json";
 				break;
@@ -54,11 +55,14 @@ switch ($datasource) {
 // $context  = stream_context_create($options);
 
 
-$options  = array('http' => array('user_agent'=> $_SERVER['HTTP_USER_AGENT']));
+$options  = array('http' => array(
+					'user_agent'=> $_SERVER['HTTP_USER_AGENT'],
+					'header'=>'Access-Control-Allow-Origin: *')
+);
 $context = stream_context_create($options);
 
 $responseString = file_get_contents($url, FALSE, $context); 
 
-header('Access-Control-Allow-Origin: *');
+// header('Access-Control-Allow-Origin: *');
 echo $responseString;
 ?>

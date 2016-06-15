@@ -679,7 +679,7 @@ $(document).ready(function () {
     					sousTitre += " (" + biographie.lieuDeces + ")";
     				}
     			}
-    			// var renderMaterial = "";
+    			
     			var itemRendered = Mustache.render(
                             this.mustacheTemplate,
                             {
