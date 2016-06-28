@@ -10,7 +10,9 @@ function getWikimediaUrl($imageFilename) {
 $datasource = $_GET["source"];
 switch ($datasource) {
 	case "viaf-links":
-			$url = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/justlinks.json";
+			// $url = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/justlinks.json";
+			
+			$url = "http://172.22.100.140/api-draft/public/viaf/authority/" . $_GET["viaf-id"] . '/links';
 			break;
 	case "viaf-file":
 			$url = "http://viaf.org/viaf/" . $_GET["viaf-id"] . "/viaf.xml";
@@ -63,6 +65,6 @@ $context = stream_context_create($options);
 
 $responseString = file_get_contents($url, FALSE, $context); 
 
-// header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: *');
 echo $responseString;
 ?>

@@ -4,7 +4,7 @@
 $(document).ready(function () {
     "use strict";
 
-    
+    var BIUSANTE_API_BASE_URL = 'http://172.22.100.140/api-draft/public';
     
     var ReferenceData = {
     		"ViafAuthorities" : {
@@ -108,7 +108,9 @@ $(document).ready(function () {
     	_getBiusanteData: function(refbiogr) {
             var _self = this;
             var promisedResults = $.Deferred();
-            var queryUrl = "proxy.php?source=biusante-biographies&refbiogr=" + refbiogr;
+            // var queryUrl = "proxy.php?source=biusante-biographies&refbiogr=" + refbiogr;
+
+            var queryUrl = BIUSANTE_API_BASE_URL + '/biographies/' + refbiogr;
             
             console.log("About to request : " + queryUrl);
             var ajaxPromise = $.ajax({
@@ -261,7 +263,9 @@ $(document).ready(function () {
     	_getViafData: function(viafId) {
             var _self = this;
             var promisedResults = $.Deferred();
-            var queryUrl = "proxy.php?source=viaf-links&viaf-id=" + viafId;
+           //  var queryUrl = "proxy.php?source=viaf-links&viaf-id=" + viafId;
+            
+            var queryUrl = BIUSANTE_API_BASE_URL + '/viaf/authority/' + viafId + '/links';
             
             console.log("About to request : " + queryUrl);
             var ajaxPromise = $.ajax({
